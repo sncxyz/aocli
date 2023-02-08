@@ -1,0 +1,20 @@
+[package]
+name = "aocli"
+version = "0.0.1"
+edition = "2021"
+description = "Advent of Code helper CLI"
+# documentation = "https://docs.rs/aocli"
+keywords = ["aoc", "advent-of-code"]
+repository = "https://github.com/scjqt/aocli"
+
+[[bin]]
+name = "aoc"
+path = "src/main.rs"
+
+[dependencies]
+regex = "1.7"
+ureq = "2.6"
+termcolor = "1.2"
+thiserror = "1.0"
+bench_scraper = "0.4"
+webbrowser = "0.8"
