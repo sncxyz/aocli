@@ -5,7 +5,7 @@ Uses [aocli-runner](https://github.com/scjqt/aocli-runner) to run solutions.
 
 ## Installation
 ```
-cargo install https://github.com/scjqt/aocli
+cargo install --git https://github.com/scjqt/aocli
 ```
 
 ## Requirements
