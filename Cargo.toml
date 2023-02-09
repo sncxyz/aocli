@@ -8,7 +8,6 @@ description = "Advent of Code helper CLI"
 readme = "README.md"
 repository = "https://github.com/scjqt/aocli"
 license = "MIT"
-license-file = "LICENSE"
 keywords = ["aoc", "advent-of-code"]
 
 [[bin]]
