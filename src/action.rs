@@ -67,7 +67,7 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
         version = \"0.1.0\"\n\
         edition = \"2021\"\n\n\
         [dependencies]\n\
-        aocli-runner = \"0.1.0\""
+        aocli-runner = {{ git = \"https://github.com/scjqt/aocli-runner\" }}"
         ),
     )?;
     if is_day_25 {
