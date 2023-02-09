@@ -66,11 +66,11 @@ For example:
 ```rust
 aoc::parts!(1, 2);
 
-fn part_1(input: &[String]) -> impl ToString {
+fn part_1(input: &[&str]) -> impl ToString {
     // solution to part 1
 }
 
-fn part_2(input: &[String]) -> impl ToString {
+fn part_2(input: &[&str]) -> impl ToString {
     // solution to part 2
 }
 ```

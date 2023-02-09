@@ -74,14 +74,14 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
         fs::write(
             path.join("src").join("main.rs"),
             "aoc::parts!(1);\n\n\
-        fn part_1(input: &[String]) -> bool {\n    unimplemented!()\n}",
+        fn part_1(input: &[&str]) -> bool {\n    unimplemented!()\n}",
         )?;
     } else {
         fs::write(
             path.join("src").join("main.rs"),
             "aoc::parts!(1);\n\n\
-        fn part_1(input: &[String]) -> bool {\n    unimplemented!()\n}\n\n\
-        // fn part_2(input: &[String]) -> bool {\n//     unimplemented!()\n// }",
+        fn part_1(input: &[&str]) -> bool {\n    unimplemented!()\n}\n\n\
+        // fn part_2(input: &[&str]) -> bool {\n//     unimplemented!()\n// }",
         )?;
     }
     let data = path.join("data").join("actual");
