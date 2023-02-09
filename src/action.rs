@@ -67,7 +67,7 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
         version = \"0.1.0\"\n\
         edition = \"2021\"\n\n\
         [dependencies]\n\
-        aocli-runner = {{ git = \"https://github.com/scjqt/aocli-runner\" }}"
+        aocli-runner = \"0.1.0\""
         ),
     )?;
     if is_day_25 {
@@ -434,10 +434,8 @@ pub fn open_day(year: &str, day: &str) -> Result<()> {
 }
 
 pub fn help() -> Result<()> {
-    webbrowser::open(&format!(
-        "https://github.com/scjqt/aocli/blob/master/README.md#commands"
-    ))
-    .context(AocError::Browser)
+    webbrowser::open("https://github.com/scjqt/aocli/blob/master/README.md#commands")
+        .context(AocError::Browser)
 }
 
 fn get_session(root: &Path) -> Result<String> {
