@@ -1,11 +1,15 @@
 [package]
 name = "aocli"
 version = "0.0.1"
+authors = ["Sam Collins <samc3259@gmail.com"]
 edition = "2021"
 description = "Advent of Code helper CLI"
 # documentation = "https://docs.rs/aocli"
-keywords = ["aoc", "advent-of-code"]
+readme = "README.md"
 repository = "https://github.com/scjqt/aocli"
+license = "MIT"
+license-file = "LICENSE"
+keywords = ["aoc", "advent-of-code"]
 
 [[bin]]
 name = "aoc"
