@@ -2,7 +2,7 @@
 //!
 //! A helper CLI tool for solving [Advent of Code](https://adventofcode.com) in Rust.
 //! Uses [aocli-runner](https://github.com/scjqt/aocli-runner) to run solutions.
-
+//!
 //! ## Installation
 //! ```text
 //! cargo install --git https://github.com/scjqt/aocli
@@ -117,12 +117,14 @@
 //!
 //! ## Commands
 //!
+//! Note that parameters surrounded by `<>` are **required**, while those surrounded by `[]` are **optional**.
+//!
 //! ### `aoc init`
 //! Initialises a solution workspace in the current directory. For example:
 //! ```text
 //! /aoc-solutions > aoc init
 //! ```
-//! will set up a solution workspace with `aoc-solutions` as the root directory, and attempt to call `git init`.
+//! will set up a solution workspace with `aoc-solutions` as the root directory, and it will attempt to call `git init`.
 //!
 //! ### `aoc session`
 //! Attempts to find a session cookie for the Advent of Code website in the local browser cache using [bench_scraper](https://crates.io/crates/bench_scraper).
@@ -163,19 +165,21 @@
 //! ```
 //! Creates the directories and empty files for a new puzzle input called \<INPUT\>.
 //!
+//! The name of the input must be a valid directory name, and cannot be `1` or `2`.
+//!
 //! ### `aoc run`
 //! ```text
 //! /root > aoc run <YEAR>
 //! /root/YEAR > aoc run
 //! ```
-//! Runs the solution to both parts of every day of the year with the `actual` puzzle input, providing total and average time statistics.
+//! Runs the solution to both parts of every day of the year with the `actual` puzzle input in release mode, providing total and average time statistics.
 //!
 //! ```text
 //! /root > aoc run <YEAR> <DAY> [INPUT] [PART]
 //! /root/YEAR > aoc run <DAY> [INPUT] [PART]
 //! /root/YEAR/DAY > aoc run [INPUT] [PART]
 //! ```
-//! Runs the solution to the day.
+//! Runs the solution to the day in release mode.
 //!
 //! Defaults to running both parts using the `actual` input, but a different input, or a specific part, can be provided.
 //!
@@ -189,9 +193,11 @@
 //! ```
 //! to run just part 1 with input `actual`.
 //! ```text
-//! /root/YEAR/DAY > aoc run example 1
+//! /root/YEAR/DAY > aoc run example 2
 //! ```
-//! to run just part 1 with input `example`.
+//! to run just part 2 with input `example`.
+//!
+//! Note that the lack of flags here is why `1` and `2` are invalid names for inputs.
 //!
 //! ### `aoc debug`
 //! ```text
@@ -206,14 +212,14 @@
 //! /root > aoc test <YEAR>
 //! /root/YEAR > aoc test
 //! ```
-//! Runs the solution to both parts of every day of the year with every puzzle input.
+//! Runs the solution to both parts of every day of the year with every puzzle input in release mode.
 //!
 //! ```text
 //! /root > aoc test <YEAR> <DAY> [PART]
 //! /root/YEAR > aoc test <DAY> [PART]
 //! /root/YEAR/DAY > aoc test [PART]
 //! ```
-//! Runs the solution to both parts, or a specific part, of the day with every puzzle input found in `/DAY/data`.
+//! Runs the solution to both parts, or a specific part, of the day with every puzzle input found in `/DAY/data` in release mode.
 //!
 //! ### `aoc submit`
 //! ```text
