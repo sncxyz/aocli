@@ -10,13 +10,20 @@ use aocli::{
 use std::{fs, path::Path, process};
 
 pub fn init(root: &Path) -> Result<()> {
-    write_project_file(ROOT, &root.join(ROOT), "")?;
+    write_project_file(ROOT, root, "")?;
     write_project_file(
         ".gitignore",
-        &root.join(".gitignore"),
+        root,
         "target/\n!**/data/target/\nCargo.lock\n/.session\n**/[1-2]/out/",
     )?;
-    write_project_file(".session", &root.join(".session"), "")?;
+    write_project_file(".session", root, "")?;
+    write_project_file(
+        "README.md",
+        root,
+        "Solutions to the puzzles at \
+    [Advent of Code](https://adventofcode.com) using \
+    [aocli](https://github.com/scjqt/aocli).",
+    )?;
     let output = process::Command::new("git")
         .arg("init")
         .current_dir(root)
@@ -33,7 +40,8 @@ pub fn init(root: &Path) -> Result<()> {
     Ok(())
 }
 
-fn write_project_file(name: &str, path: &Path, contents: &str) -> Result<()> {
+fn write_project_file(name: &str, root: &Path, contents: &str) -> Result<()> {
+    let path = &root.join(name);
     if path.try_is_file()? {
         display::info!("file `{name}` already exists");
     } else {
