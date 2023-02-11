@@ -24,6 +24,9 @@ The binary name for aocli is `aoc`.
 - minimal source files and compile times for each day
 - open year or day webpage in browser
 
+## Example
+![](example.png)
+
 ## Functionality
 A solution workspace consists of the root directory, year directories, and day directories.
 For example:
