@@ -8,6 +8,8 @@
 //! cargo install --git https://github.com/scjqt/aocli
 //! ```
 //!
+//! The binary name for aocli is `aoc`.
+//!
 //! ## Requirements
 //! - `cargo` is in PATH
 //! - terminal with colour support
@@ -15,7 +17,6 @@
 //! ## Features
 //! - download puzzle inputs and past puzzle answers
 //! - submit puzzle answers
-//! - get session cookie from local browser cache
 //! - cache puzzle answers locally for testing
 //! - run solutions on many different inputs
 //! - time solutions
@@ -46,7 +47,7 @@
 //! Each day directory is a regular Rust binary crate.
 //! The `aoc-root` file denotes the root of a solution workspace, and the `.session` file contains the session cookie to log into the Advent of Code site.
 //!
-//! `aocli` commands may work from within any of the three directory levels, and the required arguments and functionality may differ for each level.
+//! aocli commands may work from within any of the three directory levels, and the required arguments and functionality may differ for each level.
 //! For example, the following three commands will do the same thing:
 //! ```text
 //! /aoc-solutions > aoc run 15 1
@@ -103,34 +104,31 @@
 //!
 //! Empty or non-existent answer files are taken to mean that the answer is unknown.
 //!
-//! `aoc add example1` would create the directories and empty files for `example1` as above, to be filled in as desired.
+//! `add example1` would create the directories and empty files for `example1` as above, to be filled in as desired.
 //!
-//! `aoc get` would create and fill in the `actual` input directory from the website.
+//! `get` would create and fill in the `actual` input directory from the website.
 //!
-//! `aoc run example1` would run the solution using the input `example1`.
+//! `run example1` would run the solution using the input `example1`.
 //!
-//! `aoc run` defaults to using the input `actual`.
+//! `run` defaults to using the input `actual`.
 //!
 //! ## Interpreting the output
-//! `aoc run`, `aoc debug`, `aoc test` and `aoc submit` display puzzle answers colour-coded.
+//! `run`, `debug`, `test` and `submit` display puzzle answers colour-coded.
 //! Green means correct, red means incorrect, and yellow means the correct answer is not known.
 //!
 //! ## Commands
-//!
 //! Note that parameters surrounded by `<>` are **required**, while those surrounded by `[]` are **optional**.
 //!
-//! ### `aoc init`
+//! ### `init`
 //! Initialises a solution workspace in the current directory. For example:
 //! ```text
 //! /aoc-solutions > aoc init
 //! ```
 //! will set up a solution workspace with `aoc-solutions` as the root directory, and it will attempt to call `git init`.
 //!
-//! ### `aoc session`
-//! Attempts to find a session cookie for the Advent of Code website in the local browser cache using [bench_scraper](https://crates.io/crates/bench_scraper).
-//! Works from any of the three directory levels in a solution workspace.
+//! In order to use the network features of aocli (`get` and `submit`), you must paste your session cookie into the `.session` file created by this command.
 //!
-//! ### `aoc open`
+//! ### `open`
 //! ```text
 //! /root > aoc open <YEAR>
 //! /root/YEAR > aoc open
@@ -142,14 +140,14 @@
 //! ```
 //! Opens the webpage for the year or day in the default browser using [webbrowser](https://crates.io/crates/webbrowser).
 //!
-//! ### `aoc new`
+//! ### `new`
 //! ```text
 //! /root > aoc new <YEAR> <DAY>
 //! /root/YEAR > aoc new <DAY>
 //! ```
 //! Creates the directories, files and Rust crate for the solution to a new day of Advent of Code.
 //!
-//! ### `aoc get`
+//! ### `get`
 //! ```text
 //! /root > aoc get <YEAR> <DAY>
 //! /root/YEAR > aoc get <DAY>
@@ -157,7 +155,7 @@
 //! ```
 //! Downloads the puzzle input and any existing puzzle answers for the day from the website if they are not already in local files.
 //!
-//! ### `aoc add`
+//! ### `add`
 //! ```text
 //! /root > aoc add <YEAR> <DAY> <INPUT>
 //! /root/YEAR > aoc add <DAY> <INPUT>
@@ -167,7 +165,7 @@
 //!
 //! The name of the input must be a valid directory name, and cannot be `1` or `2`.
 //!
-//! ### `aoc run`
+//! ### `run`
 //! ```text
 //! /root > aoc run <YEAR>
 //! /root/YEAR > aoc run
@@ -184,7 +182,7 @@
 //! Defaults to running both parts using the `actual` input, but a different input, or a specific part, can be provided.
 //!
 //! For example:
-//! ```text
+//! ```v
 //! /root/YEAR/DAY > aoc run example
 //! ```
 //! to run both parts with input `example`.
@@ -199,15 +197,15 @@
 //!
 //! Note that the lack of flags here is why `1` and `2` are invalid names for inputs.
 //!
-//! ### `aoc debug`
+//! ### `debug`
 //! ```text
 //! /root > aoc debug <YEAR> <DAY> [INPUT] [PART]
 //! /root/YEAR > aoc debug <DAY> [INPUT] [PART]
 //! /root/YEAR/DAY > aoc debug [INPUT] [PART]
 //! ```
-//! The same as `aoc run`, except the solution is run in debug mode instead of release mode.
+//! The same as `run`, except the solution is run in debug mode instead of release mode.
 //!
-//! ### `aoc test`
+//! ### `test`
 //! ```text
 //! /root > aoc test <YEAR>
 //! /root/YEAR > aoc test
@@ -221,7 +219,7 @@
 //! ```
 //! Runs the solution to both parts, or a specific part, of the day with every puzzle input found in `/DAY/data` in release mode.
 //!
-//! ### `aoc submit`
+//! ### `submit`
 //! ```text
 //! /root > aoc submit <YEAR> <DAY> [ANSWER]
 //! /root/YEAR > aoc submit <DAY> [ANSWER]
@@ -238,7 +236,7 @@
 //! ```
 //! will run the solution and then submit the answer it produced to the site.
 //!
-//! ### `aoc help`
+//! ### `help`
 //! Opens this `README.md` in the default web browser.
 
 pub mod display;

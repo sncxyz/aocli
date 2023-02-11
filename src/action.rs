@@ -82,14 +82,14 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
         fs::write(
             path.join("src").join("main.rs"),
             "aoc::parts!(1);\n\n\
-        fn part_1(input: &[&str]) -> bool {\n    unimplemented!()\n}",
+        fn part_1(input: &[&str]) -> impl ToString {\n    0\n}",
         )?;
     } else {
         fs::write(
             path.join("src").join("main.rs"),
             "aoc::parts!(1);\n\n\
-        fn part_1(input: &[&str]) -> bool {\n    unimplemented!()\n}\n\n\
-        // fn part_2(input: &[&str]) -> bool {\n//     unimplemented!()\n// }",
+        fn part_1(input: &[&str]) -> impl ToString {\n    0\n}\n\n\
+        // fn part_2(input: &[&str]) -> impl ToString {\n//     0\n// }",
         )?;
     }
     let data = path.join("data").join("actual");
@@ -97,10 +97,10 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
     fs::write(data.join("input"), "")?;
     fs::create_dir(data.join("1"))?;
     fs::write(data.join("1").join("answer"), "")?;
-    // if !is_day_25 {
-    fs::create_dir(data.join("2"))?;
-    fs::write(data.join("2").join("answer"), "")?;
-    // }
+    if !is_day_25 {
+        fs::create_dir(data.join("2"))?;
+        fs::write(data.join("2").join("answer"), "")?;
+    }
     Ok(())
 }
 
@@ -127,24 +127,6 @@ fn write_data_files(path: &Path) -> Result<()> {
     fs::create_dir(path.join("2"))?;
     fs::write(path.join("2").join("answer"), "")?;
     Ok(())
-}
-
-pub fn session(root: &Path) -> Result<()> {
-    let browsers = bench_scraper::find_cookies()
-        .map_err(|e| format!("{e:?}").error())
-        .context("failed to get browser cookies")?;
-    for browser_cookies in browsers {
-        let browser = &browser_cookies.browser;
-        for cookie in browser_cookies.cookies {
-            if cookie.host.contains("adventofcode.com") && cookie.name == "session" {
-                display::success!("found session cookie in {:?}", browser);
-                let session = &cookie.value;
-                fs::write(root.join(".session"), session).context(AocError::FileSystemWrite)?;
-                return Ok(());
-            }
-        }
-    }
-    "failed to find session cookie in browser cookies".err()
 }
 
 pub fn run_day(

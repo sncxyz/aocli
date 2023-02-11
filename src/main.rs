@@ -271,7 +271,6 @@ fn cli() -> Result<()> {
             action::help()
         }
         (_, Unknown) => format!("unknown directory - failed to find file `{ROOT}`").err(),
-        (Session, _) => action::session(root),
     }
 }
 
@@ -355,7 +354,6 @@ enum Command {
     New,
     Open,
     Run,
-    Session,
     Submit,
     Test,
 }
@@ -371,7 +369,6 @@ impl Command {
             "new" => Ok(Self::New),
             "open" => Ok(Self::Open),
             "run" => Ok(Self::Run),
-            "session" => Ok(Self::Session),
             "submit" => Ok(Self::Submit),
             "test" => Ok(Self::Test),
             _ => format!("invalid command `{arg}`").err(),
