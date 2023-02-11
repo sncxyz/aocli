@@ -5,7 +5,7 @@
 //!
 //! ## Installation
 //! ```text
-//! cargo install --git https://github.com/scjqt/aocli
+//! cargo install aocli
 //! ```
 //!
 //! The binary name for aocli is `aoc`.
@@ -61,7 +61,7 @@
 //! ```
 //!
 //! ## Solutions
-//! A solution to a day consists of a call to `aoc::parts!` from `aocli-runner` and a function for each solved part.
+//! A solution to a day consists of a call to `aoc::parts!` from aocli-runner and a function for each solved part.
 //!
 //! For example:
 //! ```
