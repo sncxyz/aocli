@@ -63,6 +63,8 @@
 //! ## Solutions
 //! A solution to a day consists of a call to `aoc::parts!` from aocli-runner and a function for each solved part.
 //!
+//! The input is passed in as a `&[&str]`, split by line, with whitespace trimmed from the end of the input file.
+//!
 //! For example:
 //! ```
 //! aoc::parts!(1, 2);
