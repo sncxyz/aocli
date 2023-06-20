@@ -1,7 +1,7 @@
 # aocli
 
 A helper CLI tool for solving [Advent of Code](https://adventofcode.com) in Rust.
-Uses [aocli-runner](https://github.com/scjqt/aocli-runner) to run solutions.
+Uses [aoclib](https://github.com/sncxyz/aoclib) to run solutions.
 
 ## Installation
 ```
@@ -64,7 +64,7 @@ while the following two commands will run every solution for the year 2015 inste
 ```
 
 ## Solutions
-A solution to a day consists of a call to `aoc::parts!` from aocli-runner and a function for each solved part.
+A solution to a day consists of a call to `aoc::parts!` from aoclib and a function for each solved part.
 
 The input is passed in as a `&[&str]`, split by line, with whitespace trimmed from the end of the input file.
 
