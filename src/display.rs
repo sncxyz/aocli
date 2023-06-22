@@ -1,4 +1,4 @@
-use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
+use colored::{ColoredString, Colorize};
 
 use std::{
     env, fmt,
@@ -6,48 +6,16 @@ use std::{
     path::{Path, PathBuf},
 };
 
-macro_rules! color {
-    ($($arg:expr),*) => {
-        let mut stdout = StandardStream::stdout(ColorChoice::Always);
-        $(
-            let colored: Colored<_> = $arg.into();
-            let _ = stdout.set_color(&colored.color);
-            let _ = write!(&mut stdout, "{}", colored.value);
-        )*
-        let _ = stdout.reset();
-    };
-}
-
-macro_rules! colorln {
-    ($($arg:expr),*) => {
-        color!($($arg),*);
-        println!();
-    };
-}
-
-macro_rules! ecolor {
-    ($($arg:expr),*) => {
-        let mut stderr = StandardStream::stderr(ColorChoice::Always);
-        $(
-            let colored: Colored<_> = $arg.into();
-            let _ = stderr.set_color(&colored.color);
-            let _ = write!(&mut stderr, "{}", colored.value);
-        )*
-        let _ = stderr.reset();
-    };
-}
-
-macro_rules! ecolorln {
-    ($($arg:expr),*) => {
-        ecolor!($($arg),*);
-        eprintln!();
-    };
-}
-
-fn log(header: Colored<&str>, message: impl fmt::Display) {
-    let len = header.value.len();
+fn log(header: ColoredString, message: impl fmt::Display) {
+    let len = header.len();
     let padding = if len >= 9 { 0 } else { 9 - len };
-    ecolorln!(" ".repeat(padding), header, ": ".dim(), message);
+    eprintln!(
+        "{}{}{}{}",
+        " ".repeat(padding),
+        header,
+        ": ".dimmed(),
+        message
+    );
 }
 
 #[macro_export]
@@ -98,26 +66,39 @@ pub fn answer(got: &str, expected: Option<&str>, time: u64) -> bool {
     if let Some(expected) = expected {
         let expected = Answer::new(expected);
         if got.answer == expected.answer {
-            color!("[".dim(), got.display().green().bold(), "]  ".dim(), time);
+            print!(
+                "{}{}{}{}",
+                "[".dimmed(),
+                got.display().green().bold(),
+                "]  ".dimmed(),
+                time
+            );
         } else {
             let (got, symbol) = if got.is_multiline && !expected.is_multiline {
                 (got.display().yellow().bold(), "-")
             } else {
                 (got.display().red().bold(), "✕")
             };
-            color!(
-                "[".dim(),
+            print!(
+                "{}{}{}{}{}{}{}{}",
+                "[".dimmed(),
                 got,
-                "] ".dim(),
-                symbol.dim(),
-                " [".dim(),
+                "] ".dimmed(),
+                symbol.dimmed(),
+                " [".dimmed(),
                 expected.display().green().bold(),
-                "]  ".dim(),
+                "]  ".dimmed(),
                 time
             );
         }
     } else {
-        color!("[".dim(), got.display().yellow().bold(), "]  ".dim(), time);
+        print!(
+            "{}{}{}{}",
+            "[".dimmed(),
+            got.display().yellow().bold(),
+            "]  ".dimmed(),
+            time
+        );
     }
     got.is_multiline
 }
@@ -129,11 +110,11 @@ pub fn just_answer(answer: &str, correct: bool) {
     } else {
         answer.display().red().bold()
     };
-    colorln!("[".dim(), answer, "]".dim());
+    println!("{}{}{}", "[".dimmed(), answer, "]".dimmed());
 }
 
 pub fn wait() {
-    colorln!("wait".yellow());
+    println!("{}", "wait".yellow());
 }
 
 pub fn answer_full(
@@ -154,44 +135,52 @@ pub fn answer_full(
 }
 
 pub fn unimplemented() {
-    colorln!("unimplemented".yellow());
+    println!("{}", "unimplemented".yellow());
 }
 
 pub fn panic() {
-    colorln!("panic".red());
+    println!("{}", "panic".red());
 }
 
 pub fn panic_input(input: &str) {
-    colorln!("panic".red(), "  (", input, ")");
+    println!("{}  ({})", "panic".red(), input);
 }
 
 pub fn no_input() {
     part("*");
-    colorln!("no input".yellow());
+    println!("{}", "no input".yellow());
 }
 
 pub fn build_error() {
     part("*");
-    colorln!("build error".red());
+    println!("{}", "build error".red());
 }
 
 pub fn day(year: &str, day: &str) {
-    color!(year, "/".dim(), day);
+    print!("{}{}{}", year, "/".dimmed(), day);
     let _ = io::stdout().flush();
 }
 
 pub fn part(part: &str) {
-    color!("/".dim(), part, ": ".dim());
+    print!("{}{}{}", "/".dimmed(), part, ": ".dimmed());
     let _ = io::stdout().flush();
 }
 
 pub fn day_part(year: &str, day: &str, part: &str) {
-    color!(year, "/".dim(), day, "/".dim(), part, ": ".dim());
+    print!(
+        "{}{}{}{}{}{}",
+        year,
+        "/".dimmed(),
+        day,
+        "/".dimmed(),
+        part,
+        ": ".dimmed()
+    );
     let _ = io::stdout().flush();
 }
 
 pub fn submit_error() {
-    colorln!("error".red());
+    println!("{}", "error".red());
 }
 
 fn display_time(time: u64) -> String {
@@ -203,11 +192,11 @@ fn display_time(time: u64) -> String {
     format!("{}{unit}", time as f64 / div as f64)
 }
 
-fn colored_time(time: u64) -> Colored<String> {
+fn colored_time(time: u64) -> ColoredString {
     let text = display_time(time);
     match time {
-        _ if time < 10_000_000 => text.green(),
-        _ if time < 100_000_000 => text.yellow(),
+        _ if time < 20_000_000 => text.green(),
+        _ if time < 200_000_000 => text.yellow(),
         _ => text.red(),
     }
 }
@@ -258,67 +247,5 @@ impl<'a> Answer<'a> {
         } else {
             self.answer
         }
-    }
-}
-
-struct Colored<T> {
-    value: T,
-    color: ColorSpec,
-}
-
-impl<T> Colored<T> {
-    fn bold(mut self) -> Self {
-        self.color.set_bold(true);
-        self
-    }
-}
-
-impl<T> From<T> for Colored<T>
-where
-    T: fmt::Display,
-{
-    fn from(value: T) -> Self {
-        value.normal()
-    }
-}
-
-trait Colorer<T> {
-    fn normal(self) -> Colored<T>;
-    fn green(self) -> Colored<T>;
-    fn yellow(self) -> Colored<T>;
-    fn red(self) -> Colored<T>;
-    fn dim(self) -> Colored<T>;
-}
-
-impl<T> Colorer<T> for T {
-    fn normal(self) -> Colored<T> {
-        Colored {
-            value: self,
-            color: ColorSpec::new(),
-        }
-    }
-
-    fn green(self) -> Colored<T> {
-        let mut color = ColorSpec::new();
-        color.set_fg(Some(Color::Green));
-        Colored { value: self, color }
-    }
-
-    fn yellow(self) -> Colored<T> {
-        let mut color = ColorSpec::new();
-        color.set_fg(Some(Color::Yellow));
-        Colored { value: self, color }
-    }
-
-    fn red(self) -> Colored<T> {
-        let mut color = ColorSpec::new();
-        color.set_fg(Some(Color::Red));
-        Colored { value: self, color }
-    }
-
-    fn dim(self) -> Colored<T> {
-        let mut color = ColorSpec::new();
-        color.set_dimmed(true);
-        Colored { value: self, color }
     }
 }

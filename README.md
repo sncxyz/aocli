@@ -12,7 +12,7 @@ The binary name for aocli is `aoc`.
 
 ## Requirements
 - `cargo` is in PATH
-- terminal with colour support
+- terminal with ANSI colour support
 
 ## Features
 - download puzzle inputs and past puzzle answers
