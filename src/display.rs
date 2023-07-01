@@ -202,7 +202,7 @@ fn colored_time(time: u64) -> ColoredString {
 }
 
 pub fn stats(total_time: u64, num_parts: u8) {
-    log("parts".normal(), format!("{num_parts:02}/49"));
+    log("parts".normal(), format!("{num_parts:02}"));
     if num_parts > 0 {
         log("total".normal(), display_time(total_time));
         log(

@@ -186,10 +186,12 @@ pub fn run_day(
     Ok(())
 }
 
-pub fn run_year(path: &Path, year: &str) -> Result<()> {
+pub fn run_days(path: &Path, year: &str, days: impl IntoIterator<Item = u8>) -> Result<()> {
     let mut total_time = 0;
     let mut num_parts = 0;
-    for day_number in 1..=25 {
+    let mut total_days = 0;
+    for day_number in days {
+        total_days += 1;
         let day = &format!("{day_number:02}");
         let path = &path.join(day);
         if !path.try_is_dir()? {
@@ -216,6 +218,9 @@ pub fn run_year(path: &Path, year: &str) -> Result<()> {
             display::day_part(year, day, "2");
             run_part(path, day, "2", &mut total_time, &mut num_parts)?;
         }
+    }
+    if total_days == 0 {
+        return AocError::NoDays.err();
     }
     display::stats(total_time, num_parts);
     Ok(())
@@ -299,9 +304,9 @@ fn test_parts(path: &Path, year: &str, day: &str, parts: &[&str]) -> Result<bool
     Ok(empty)
 }
 
-pub fn test_year(path: &Path, year: &str) -> Result<()> {
+pub fn test_days(path: &Path, year: &str, days: impl IntoIterator<Item = u8>) -> Result<()> {
     let mut empty = true;
-    for day_number in 1..=25 {
+    for day_number in days {
         let day = &format!("{day_number:02}");
         let path = &path.join(day);
         if !path.try_is_dir()? || !run::build(path, false, false)?.success() {

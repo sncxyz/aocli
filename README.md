@@ -19,6 +19,7 @@ The binary name for aocli is `aoc`.
 - submit puzzle answers
 - cache puzzle answers locally for testing
 - run solutions on many different inputs
+- run solutions to all days, or specified days, of a year
 - time solutions
 - project management (create crates and files)
 - minimal source files and compile times for each day
@@ -190,11 +191,11 @@ For example:
 ```
 /root/YEAR/DAY > aoc run example
 ```
-to run both parts with input `example`.
+to run both parts with input `example`,
 ```
 /root/YEAR/DAY > aoc run 1
 ```
-to run just part 1 with input `actual`.
+to run just part 1 with input `actual`, and
 ```
 /root/YEAR/DAY > aoc run example 2
 ```
@@ -210,6 +211,45 @@ Note that the lack of flags here is why `1` and `2` are invalid names for inputs
 ```
 The same as `run`, except the solution is run in debug mode instead of release mode.
 
+### `run days`
+```
+/root > aoc run <YEAR> days <DAYS>
+/root/YEAR > aoc run days <DAYS>
+```
+Runs the solution to both parts of the specified days of the year with the `actual` puzzle input in release mode, providing total and average time statistics.
+
+The \<DAYS\> argument should be a sequence of space-separated terms, where each term is one of the following:
+- a day, `X`
+- an inclusive range of days, `X..Y`
+- a negation of the above, `-X` or `-X..Y`
+
+The start and end days in a range are optional, so `X..` is equivalent to `X..25` and `..Y` is equivalent to `1..Y`.
+
+If the first term is a regular term, initially no days are included, and if the first term is a negated term, initially all days are included.
+Terms are then applied in order, one by one. A regular term causes its day(s) to be included, and a negated term causes them to be excluded.
+
+- `days 4 8` = `days 4..8 -5 -6 -7` = `days 4..8 -5..7` = `days ..8 -5..7 -..3`
+- `days -3` = `days 1..25 -3` = `days 1 2 4..`
+- `days -1 -25` = `days 2..24`
+
+For example:
+```
+/root > aoc run 2019 days -25
+```
+to run all but day 25 in 2019,
+```
+/root/2021 > aoc run days -19
+```
+to run all but day 19 in 2021,
+```
+/root/2022 > aoc run days ..10 20..
+```
+to run days 1 to 10 and 20 to 25 in 2022, and
+```
+/root/2018 > aoc run days 1 4 9
+```
+to run days 1, 4 and 9 in 2018.
+
 ### `test`
 ```
 /root > aoc test <YEAR>
@@ -223,6 +263,15 @@ Runs the solution to both parts of every day of the year with every puzzle input
 /root/YEAR/DAY > aoc test [PART]
 ```
 Runs the solution to both parts, or a specific part, of the day with every puzzle input found in `/DAY/data` in release mode.
+
+### `test days`
+```
+/root > aoc test <YEAR> days <DAYS>
+/root/YEAR > aoc test days <DAYS>
+```
+Runs the solution to both parts of the specified days of the year with every puzzle input in release mode.
+
+The rules governing the argument \<DAYS\> are the same as in `run days` above.
 
 ### `submit`
 ```

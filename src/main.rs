@@ -1,4 +1,5 @@
 mod action;
+mod days;
 mod network;
 mod run;
 
@@ -112,39 +113,47 @@ fn cli() -> Result<()> {
         (Run, Root) => {
             const USAGE_1: &str = "run <YEAR>";
             const USAGE_2: &str = "run <YEAR> <DAY> [INPUT] [PART]";
-            match args.len() {
-                0 => AocError::MissingArg(Arg::Year)
-                    .err()
-                    .usage(USAGE_1)
-                    .usage(USAGE_2),
-                1 => {
-                    let year = &year_from_arg(args[0]).usage(USAGE_1).usage(USAGE_2)?;
-                    let path = &root.join(year);
-                    path.assert_year_dir()?;
-                    action::run_year(path, year)
-                }
-                _ => {
-                    let year = &year_from_arg(args[0]).usage(USAGE_1).usage(USAGE_2)?;
-                    let day = &day_from_arg(args[1]).usage(USAGE_1).usage(USAGE_2)?;
-                    let path = &root.join(year).join(day);
-                    path.assert_day_dir()?;
-                    let (input, parts) = input_parts(&args[2..]).usage(USAGE_1).usage(USAGE_2)?;
-                    action::run_day(path, year, day, input, parts, false)
-                }
+            const USAGE_3: &str = "run <YEAR> days <DAYS>";
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2, USAGE_3];
+            if args.is_empty() {
+                return AocError::MissingArg(Arg::Year).err().usages(USAGES);
             }
+            let year = &year_from_arg(args[0]).usages(USAGES)?;
+            if args.len() == 1 {
+                let path = &root.join(year);
+                path.assert_year_dir()?;
+                return action::run_days(path, year, 1..=25);
+            }
+            if args[1] == "days" {
+                let path = &root.join(year);
+                path.assert_year_dir()?;
+                let days = days::parse_days(&args[2..]).usages(USAGES)?;
+                return action::run_days(path, year, days);
+            }
+            let day = &day_from_arg(args[1]).usages(USAGES)?;
+            let path = &root.join(year).join(day);
+            path.assert_day_dir()?;
+            let (input, parts) = input_parts(&args[2..]).usages(USAGES)?;
+            action::run_day(path, year, day, input, parts, false)
         }
         (Run, Year { year }) => {
+            const USAGE_1: &str = "run";
+            const USAGE_2: &str = "run <DAY> [INPUT] [PART]";
+            const USAGE_3: &str = "run days <DAYS>";
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2, USAGE_3];
             if args.is_empty() {
-                action::run_year(&root.join(year), year)
-            } else {
-                const USAGE_1: &str = "run";
-                const USAGE_2: &str = "run <DAY> [INPUT] [PART]";
-                let day = &day_from_arg(args[0]).usage(USAGE_1).usage(USAGE_2)?;
-                let path = &root.join(year).join(day);
-                path.assert_day_dir()?;
-                let (input, parts) = input_parts(&args[1..]).usage(USAGE_1).usage(USAGE_2)?;
-                action::run_day(path, year, day, input, parts, false)
+                return action::run_days(&root.join(year), year, 1..=25);
             }
+            if args[0] == "days" {
+                let path = &root.join(year);
+                let days = days::parse_days(&args[1..]).usages(USAGES)?;
+                return action::run_days(path, year, days);
+            }
+            let day = &day_from_arg(args[0]).usages(USAGES)?;
+            let path = &root.join(year).join(day);
+            path.assert_day_dir()?;
+            let (input, parts) = input_parts(&args[1..]).usages(USAGES)?;
+            action::run_day(path, year, day, input, parts, false)
         }
         (Run, Day { year, day }) => {
             let (input, parts) = input_parts(args).usage("run [INPUT] [PART]")?;
@@ -178,39 +187,47 @@ fn cli() -> Result<()> {
         (Test, Root) => {
             const USAGE_1: &str = "test <YEAR>";
             const USAGE_2: &str = "test <YEAR> <DAY> [PART]";
-            match args.len() {
-                0 => AocError::MissingArg(Arg::Year)
-                    .err()
-                    .usage(USAGE_1)
-                    .usage(USAGE_2),
-                1 => {
-                    let year = &year_from_arg(args[0]).usage(USAGE_1).usage(USAGE_2)?;
-                    let path = &root.join(year);
-                    path.assert_year_dir()?;
-                    action::test_year(path, year)
-                }
-                _ => {
-                    let year = &year_from_arg(args[0]).usage(USAGE_1).usage(USAGE_2)?;
-                    let day = &day_from_arg(args[1]).usage(USAGE_1).usage(USAGE_2)?;
-                    let path = &root.join(year).join(day);
-                    path.assert_day_dir()?;
-                    let parts = Parts::from_args(&args[2..]).usage(USAGE_1).usage(USAGE_2)?;
-                    action::test_day(path, year, day, parts)
-                }
+            const USAGE_3: &str = "test <YEAR> days <DAYS>";
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2, USAGE_3];
+            if args.is_empty() {
+                return AocError::MissingArg(Arg::Year).err().usages(USAGES);
             }
+            let year = &year_from_arg(args[0]).usages(USAGES)?;
+            if args.len() == 1 {
+                let path = &root.join(year);
+                path.assert_year_dir()?;
+                return action::test_days(path, year, 1..=25);
+            }
+            if args[1] == "days" {
+                let path = &root.join(year);
+                path.assert_year_dir()?;
+                let days = days::parse_days(&args[2..]).usages(USAGES)?;
+                return action::test_days(path, year, days);
+            }
+            let day = &day_from_arg(args[1]).usages(USAGES)?;
+            let path = &root.join(year).join(day);
+            path.assert_day_dir()?;
+            let parts = Parts::from_args(&args[2..]).usages(USAGES)?;
+            action::test_day(path, year, day, parts)
         }
         (Test, Year { year }) => {
+            const USAGE_1: &str = "test";
+            const USAGE_2: &str = "test <DAY> [PART]";
+            const USAGE_3: &str = "test days <DAYS>";
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2, USAGE_3];
             if args.is_empty() {
-                action::test_year(&root.join(year), year)
-            } else {
-                const USAGE_1: &str = "test";
-                const USAGE_2: &str = "test <DAY> [PART]";
-                let day = &day_from_arg(args[0]).usage(USAGE_1).usage(USAGE_2)?;
-                let path = &root.join(year).join(day);
-                path.assert_day_dir()?;
-                let parts = Parts::from_args(&args[1..]).usage(USAGE_1).usage(USAGE_2)?;
-                action::test_day(path, year, day, parts)
+                return action::test_days(&root.join(year), year, 1..=25);
             }
+            if args[0] == "days" {
+                let path = &root.join(year);
+                let days = days::parse_days(&args[1..]).usages(USAGES)?;
+                return action::test_days(path, year, days);
+            }
+            let day = &day_from_arg(args[0]).usages(USAGES)?;
+            let path = &root.join(year).join(day);
+            path.assert_day_dir()?;
+            let parts = Parts::from_args(&args[1..]).usages(USAGES)?;
+            action::test_day(path, year, day, parts)
         }
         (Test, Day { year, day }) => {
             let parts = Parts::from_args(args).usage("test [PART]")?;
@@ -244,15 +261,14 @@ fn cli() -> Result<()> {
         (Open, Root | Unknown) => {
             const USAGE_1: &str = "open <YEAR>";
             const USAGE_2: &str = "open <YEAR> <DAY>";
-            assert_first_args(args, &[Arg::Year])
-                .usage(USAGE_1)
-                .usage(USAGE_2)?;
-            let year = &year_from_arg(args[0]).usage(USAGE_1).usage(USAGE_2)?;
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2];
+            assert_first_args(args, &[Arg::Year]).usages(USAGES)?;
+            let year = &year_from_arg(args[0]).usages(USAGES)?;
             if args.len() == 1 {
                 action::open_year(year)
             } else {
                 assert_args(&args[1..], &[Arg::Day])?;
-                let day = &day_from_arg(args[1]).usage(USAGE_1).usage(USAGE_2)?;
+                let day = &day_from_arg(args[1]).usages(USAGES)?;
                 action::open_day(year, day)
             }
         }
@@ -379,24 +395,24 @@ impl Command {
 fn year_from_arg(arg: &str) -> Result<String> {
     let mut num = arg
         .parse::<u16>()
-        .map_err(|_| AocError::Integer)
+        .map_err(|_| AocError::YearArg)
         .context(AocError::InvalidArg(Arg::Year, arg.into()))?;
     if num < 1000 {
         num += 2000;
     }
     (num >= 2015)
         .then(|| num.to_string())
-        .ok_or(AocError::YearRange)
+        .ok_or(AocError::YearArg)
         .context(AocError::InvalidArg(Arg::Year, arg.into()))
 }
 
 fn day_from_arg(arg: &str) -> Result<String> {
     let num = arg
         .parse::<u16>()
-        .map_err(|_| AocError::Integer)
+        .map_err(|_| AocError::DayArg)
         .context(AocError::InvalidArg(Arg::Day, arg.into()))?;
     ((1..=25).contains(&num))
         .then(|| format!("{num:02}"))
-        .ok_or(AocError::DayRange)
+        .ok_or(AocError::DayArg)
         .context(AocError::InvalidArg(Arg::Day, arg.into()))
 }

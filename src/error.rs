@@ -10,12 +10,10 @@ pub enum AocError {
     YearDir,
     #[error("invalid day directory")]
     DayDir,
-    #[error("must be an integer")]
-    Integer,
-    #[error("must be at least 2015")]
-    YearRange,
-    #[error("must be between 1 and 25")]
-    DayRange,
+    #[error("must be an integer at least 2015")]
+    YearArg,
+    #[error("must be an integer between 1 and 25")]
+    DayArg,
     #[error("unexpected argument `{0}`")]
     ExtraArg(String),
     #[error("invalid value for argument <{0}>: `{1}`")]
@@ -52,6 +50,14 @@ pub enum AocError {
     DayAvailable,
     #[error("failed to open browser")]
     Browser,
+    #[error("no days to run")]
+    NoDays,
+    #[error("invalid term in argument <DAYS>: `{0}`")]
+    InvalidTerm(String),
+    #[error("term must be in the form X, -X, X..Y or -X..Y")]
+    TermFormat,
+    #[error("day must be between 1 and 25")]
+    TermDayRange,
 }
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;
@@ -90,6 +96,13 @@ impl Error {
         self.usage.push(usage().to_string());
         self
     }
+
+    pub fn usages<U: ToString>(mut self, usages: impl IntoIterator<Item = U>) -> Self {
+        for usage in usages {
+            self = self.usage(usage);
+        }
+        self
+    }
 }
 
 pub trait Context<T, E: Into<Error>> {
@@ -97,6 +110,7 @@ pub trait Context<T, E: Into<Error>> {
     fn with_context<C: ToString, F: Fn() -> C>(self, context: F) -> Result<T, Error>;
     fn usage<U: ToString>(self, usage: U) -> Result<T, Error>;
     fn with_usage<U: ToString, F: Fn() -> U>(self, usage: F) -> Result<T, Error>;
+    fn usages<U: ToString>(self, usages: impl IntoIterator<Item = U>) -> Result<T, Error>;
 }
 
 impl<T, E: Into<Error>> Context<T, E> for Result<T, E> {
@@ -114,6 +128,10 @@ impl<T, E: Into<Error>> Context<T, E> for Result<T, E> {
 
     fn with_usage<U: ToString, F: Fn() -> U>(self, usage: F) -> Result<T, Error> {
         self.map_err(|e| e.into().with_usage(usage))
+    }
+
+    fn usages<U: ToString>(self, usages: impl IntoIterator<Item = U>) -> Result<T, Error> {
+        self.map_err(|e| e.into().usages(usages))
     }
 }
 
