@@ -29,9 +29,9 @@ pub enum AocError {
     #[error("path already exists: {0}")]
     PathExists(String),
     #[error("failed to read file system")]
-    FileSystemRead,
+    FileRead,
     #[error("failed to write to file system")]
-    FileSystemWrite,
+    FileWrite,
     #[error("failed to initialise git repository")]
     GitInit,
     #[error("file empty at {0}")]

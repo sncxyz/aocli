@@ -21,6 +21,7 @@ The binary name for aocli is `aoc`.
 - run solutions on many different inputs
 - run solutions to all days, or specified days, of a year
 - time solutions
+- quickly view your progress
 - project management (create crates and files)
 - minimal source files and compile times for each day
 - open year or day webpage in browser
@@ -170,6 +171,18 @@ Downloads the puzzle input and any existing puzzle answers for the day from the 
 Creates the directories and empty files for a new puzzle input called \<INPUT\>.
 
 The name of the input must be a valid directory name, and cannot be `1` or `2`.
+
+### `clean`
+```
+/root > aoc clean <YEAR>
+/root/YEAR > aoc clean
+```
+```
+/root > aoc clean <YEAR> <DAY>
+/root/YEAR > aoc clean <DAY>
+/root/YEAR/DAY > aoc clean
+```
+Resets the input and answer files to empty files within the `actual` input of every day of the year, or the specified day, so that `get` can fill them in.
 
 ### `run`
 ```

@@ -63,7 +63,7 @@ where
 {
     fn try_is_file(&self) -> Result<bool> {
         let path = self.as_ref();
-        Ok(if path.try_exists().context(AocError::FileSystemRead)? {
+        Ok(if path.try_exists().context(AocError::FileRead)? {
             path.is_file()
         } else {
             false
@@ -72,7 +72,7 @@ where
 
     fn try_is_dir(&self) -> Result<bool> {
         let path = self.as_ref();
-        Ok(if path.try_exists().context(AocError::FileSystemRead)? {
+        Ok(if path.try_exists().context(AocError::FileRead)? {
             path.is_dir()
         } else {
             false
@@ -83,7 +83,7 @@ where
         Ok(FileInfo {
             path: self.as_ref(),
             contents: if self.try_is_file()? {
-                let contents = fs::read_to_string(self).context(AocError::FileSystemRead)?;
+                let contents = fs::read_to_string(self).context(AocError::FileRead)?;
                 let contents = contents.trim_end();
                 if contents.is_empty() {
                     FileContents::Empty

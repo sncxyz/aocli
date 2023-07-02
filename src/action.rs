@@ -46,17 +46,17 @@ fn write_project_file(name: &str, root: &Path, contents: &str) -> Result<()> {
     if path.try_is_file()? {
         display::info!("file `{name}` already exists");
     } else {
-        fs::write(path, contents).context(AocError::FileSystemWrite)?;
+        fs::write(path, contents).context(AocError::FileWrite)?;
         display::success!("wrote file `{name}`");
     }
     Ok(())
 }
 
 pub fn new_day(path: &Path, year: &str, day: &str) -> Result<()> {
-    if path.try_exists().context(AocError::FileSystemRead)? {
+    if path.try_exists().context(AocError::FileRead)? {
         return AocError::PathExists(display::path(path)).err();
     }
-    write_day_files(path, day).context(AocError::FileSystemWrite)?;
+    write_day_files(path, day).context(AocError::FileWrite)?;
     display::success!("created crate for {year}/{day}");
     display::info!("building crate...");
     if run::build(path, false, false).display_err().is_some() {
@@ -108,7 +108,7 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
 pub fn add_input(path: &Path, data: &str) -> Result<()> {
     let mut data_path = path.join("data");
     if !data_path.try_is_dir()? {
-        fs::create_dir(&data_path).context(AocError::FileSystemWrite)?;
+        fs::create_dir(&data_path).context(AocError::FileWrite)?;
     }
     data_path.push(data);
     let data_path = &data_path;
@@ -119,7 +119,7 @@ pub fn add_input(path: &Path, data: &str) -> Result<()> {
     {
         return AocError::PathExists(display::path(data_path)).err();
     }
-    write_data_files(data_path).context(AocError::FileSystemWrite)?;
+    write_data_files(data_path).context(AocError::FileWrite)?;
     display::success!("created input `{}` at {}", data, display::path(data_path));
     Ok(())
 }
@@ -283,12 +283,8 @@ pub fn test_day(path: &Path, year: &str, day: &str, parts: Parts) -> Result<()> 
 fn test_parts(path: &Path, year: &str, day: &str, parts: &[&str]) -> Result<bool> {
     let mut implemented = [true, true];
     let mut empty = true;
-    for dir in path
-        .join("data")
-        .read_dir()
-        .context(AocError::FileSystemRead)?
-    {
-        let dir = &dir.context(AocError::FileSystemRead)?;
+    for dir in path.join("data").read_dir().context(AocError::FileRead)? {
+        let dir = &dir.context(AocError::FileRead)?;
         let input = dir.file_name();
         let Some(input) = input.to_str() else {
             continue;
@@ -360,12 +356,12 @@ pub fn get(path: &Path, year: &str, day: &str) -> Result<()> {
     if update_input || update_answers[0] || update_answers[1] {
         let session = &get_session(path.parent().unwrap().parent().unwrap())?;
         if !data_path.try_is_dir()? {
-            fs::create_dir_all(data_path).context(AocError::FileSystemWrite)?;
+            fs::create_dir_all(data_path).context(AocError::FileWrite)?;
         }
         if update_input {
             display::info!("downloading puzzle input...");
             let input = network::get_input(year, day, session)?;
-            fs::write(input_path, input).context(AocError::FileSystemWrite)?;
+            fs::write(input_path, input).context(AocError::FileWrite)?;
             display::success!("input file written to {}", display::path(input_path));
         }
         if update_answers[0] || update_answers[1] {
@@ -380,9 +376,9 @@ pub fn get(path: &Path, year: &str, day: &str) -> Result<()> {
                 if let Some(answer) = &answers[i] {
                     let part_path = answer_paths[i].parent().unwrap();
                     if !part_path.try_is_dir()? {
-                        fs::create_dir(part_path).context(AocError::FileSystemWrite)?;
+                        fs::create_dir(part_path).context(AocError::FileWrite)?;
                     }
-                    fs::write(&answer_paths[i], answer).context(AocError::FileSystemWrite)?;
+                    fs::write(&answer_paths[i], answer).context(AocError::FileWrite)?;
                     display::success!(
                         "answer to part {part} written to {}",
                         display::path(&answer_paths[i])
@@ -416,7 +412,7 @@ pub fn submit(path: &Path, year: &str, day: &str, answer: Option<&str>) -> Resul
                 .map_err(|_| "no answer to submit")?
         };
         if !answer_path.try_is_dir()? {
-            fs::create_dir_all(answer_path).context(AocError::FileSystemWrite)?;
+            fs::create_dir_all(answer_path).context(AocError::FileWrite)?;
         }
         display::day_part(year, day, part);
         let result = network::submit(year, day, part, answer, session);
@@ -426,7 +422,7 @@ pub fn submit(path: &Path, year: &str, day: &str, answer: Option<&str>) -> Resul
         match result? {
             network::SubmissionResult::Correct => {
                 display::just_answer(answer, true);
-                fs::write(answer_path.join("answer"), answer).context(AocError::FileSystemWrite)?;
+                fs::write(answer_path.join("answer"), answer).context(AocError::FileWrite)?;
             }
             network::SubmissionResult::Wait => {
                 display::wait();
@@ -490,6 +486,49 @@ pub fn day_progress(path: &Path, year: &str, day: &str) -> Result<()> {
     if let Some(answer) = &progress.part_2 {
         display::day_part(year, day, "2");
         display::just_answer(answer, true);
+    }
+    Ok(())
+}
+
+pub fn clean_year(path: &Path) -> Result<()> {
+    let mut empty = true;
+    for day in 1..=25 {
+        let day = &format!("{day:02}");
+        let path = &path.join(day);
+        if path.try_is_dir()? {
+            clean_day(path, true)?;
+            empty = false;
+        }
+    }
+    if empty {
+        display::info!("no day directories found");
+    } else {
+        display::success!("cleaned input and answer files for all days");
+    }
+    Ok(())
+}
+
+pub fn clean_day(path: &Path, silent: bool) -> Result<()> {
+    let data_path = &path.join("data").join("actual");
+    let input_path = &data_path.join("input");
+    if input_path.try_is_file()? {
+        fs::write(input_path, "").context(AocError::FileWrite)?;
+        if !silent {
+            display::success!("reset input file to empty");
+        }
+    } else if !silent {
+        display::info!("no input file found");
+    }
+    for part in ["1", "2"] {
+        let part_path = data_path.join(part).join("answer");
+        if part_path.try_is_file()? {
+            fs::write(part_path, "").context(AocError::FileWrite)?;
+            if !silent {
+                display::success!("reset part {part} answer file to empty");
+            }
+        } else if !silent {
+            display::info!("no part {part} answer file found");
+        }
     }
     Ok(())
 }

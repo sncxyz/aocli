@@ -112,6 +112,42 @@ fn cli() -> Result<()> {
             let path = &root.join(year).join(day);
             action::get(path, year, day)
         }
+        (Clean, Root) => {
+            const USAGE_1: &str = "clean <YEAR>";
+            const USAGE_2: &str = "clean <YEAR> <DAY>";
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2];
+            assert_first_args(args, &[Arg::Year]).usages(USAGES)?;
+            let year = &year_from_arg(args[0]).usages(USAGES)?;
+            if args.len() == 1 {
+                let path = &root.join(year);
+                path.assert_year_dir()?;
+                action::clean_year(path)
+            } else {
+                assert_args(&args[1..], &[Arg::Day]).usages(USAGES)?;
+                let day = &day_from_arg(args[1]).usages(USAGES)?;
+                let path = &root.join(year).join(day);
+                path.assert_day_dir()?;
+                action::clean_day(path, false)
+            }
+        }
+        (Clean, Year { year }) => {
+            if args.is_empty() {
+                action::clean_year(&root.join(year))
+            } else {
+                const USAGE_1: &str = "clean";
+                const USAGE_2: &str = "clean <DAY>";
+                const USAGES: &[&str] = &[USAGE_1, USAGE_2];
+                assert_args(args, &[Arg::Day]).usages(USAGES)?;
+                let day = &day_from_arg(args[0]).usages(USAGES)?;
+                let path = &root.join(year).join(day);
+                path.assert_day_dir()?;
+                action::clean_day(path, false)
+            }
+        }
+        (Clean, Day { year, day }) => {
+            assert_args(args, &[]).usage("clean")?;
+            action::clean_day(&root.join(year).join(day), false)
+        }
         (Run, Root) => {
             const USAGE_1: &str = "run <YEAR>";
             const USAGE_2: &str = "run <YEAR> <DAY> [INPUT] [PART]";
@@ -406,6 +442,7 @@ impl Parts {
 
 enum Command {
     Add,
+    Clean,
     Debug,
     Get,
     Help,
@@ -422,6 +459,7 @@ impl Command {
     fn from_arg(arg: &str) -> Result<Self> {
         match arg {
             "add" => Ok(Self::Add),
+            "clean" => Ok(Self::Clean),
             "debug" => Ok(Self::Debug),
             "get" => Ok(Self::Get),
             "help" => Ok(Self::Help),
