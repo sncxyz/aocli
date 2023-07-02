@@ -1,6 +1,6 @@
 [package]
 name = "aocli"
-version = "0.0.4"
+version = "0.0.5"
 authors = ["Sam Collins <samc3259@gmail.com>"]
 edition = "2021"
 description = "Advent of Code helper CLI"
@@ -15,8 +15,8 @@ name = "aoc"
 path = "src/main.rs"
 
 [dependencies]
-regex = "1.7"
-ureq = "2.6"
+regex = "1.8"
+ureq = "2.7"
 colored = "2.0"
 thiserror = "1.0"
 webbrowser = "0.8"

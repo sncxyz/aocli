@@ -290,5 +290,22 @@ For example:
 ```
 will run the solution and then submit the answer it produced to the site.
 
+### `progress`
+```
+/root > aoc progress
+```
+```
+/root > aoc progress <YEAR>
+/root/YEAR > aoc progress
+```
+Displays your account's progress in all years, or the specified year.
+
+```
+/root > aoc progress <YEAR> <DAY>
+/root/YEAR > aoc progress <DAY>
+/root/YEAR/DAY > aoc progress
+```
+Displays your account's correctly submitted answers to the day.
+
 ### `help`
 Opens this `README.md` in the default web browser.

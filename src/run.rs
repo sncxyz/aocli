@@ -1,4 +1,4 @@
-use aocli::{error::Result, file::PathInfo};
+use crate::{error::Result, file::PathInfo};
 
 use std::{fs, path::Path, process::Command};
 

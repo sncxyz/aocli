@@ -1,4 +1,4 @@
-use aocli::error::{AocError, Context, Result, ToErr};
+use crate::error::{AocError, Context, Result, ToErr};
 
 pub fn parse_days(args: &[&str]) -> Result<Vec<u8>> {
     let mut terms = Vec::with_capacity(args.len());

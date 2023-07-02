@@ -1,6 +1,7 @@
+use crate::run::BuildResult;
 use crate::{network, run, Parts};
 
-use aocli::{
+use crate::{
     display,
     error::{AocError, Context, ErrorDisplayer, Result, ToErr},
     file::{FileInfo, PathInfo},
@@ -111,7 +112,11 @@ pub fn add_input(path: &Path, data: &str) -> Result<()> {
     }
     data_path.push(data);
     let data_path = &data_path;
-    if data_path.try_is_dir()? {
+    if data_path
+        .try_is_dir()
+        .map_err(|_| AocError::InputNameFormat)
+        .context(AocError::InputName)?
+    {
         return AocError::PathExists(display::path(data_path)).err();
     }
     write_data_files(data_path).context(AocError::FileSystemWrite)?;
@@ -197,7 +202,6 @@ pub fn run_days(path: &Path, year: &str, days: impl IntoIterator<Item = u8>) -> 
         if !path.try_is_dir()? {
             continue;
         }
-        display::day(year, day);
         if !path
             .join("data")
             .join("actual")
@@ -205,18 +209,33 @@ pub fn run_days(path: &Path, year: &str, days: impl IntoIterator<Item = u8>) -> 
             .read_file()?
             .has_contents()
         {
+            display::day(year, day);
             display::no_input();
             continue;
         }
-        if !run::build(path, false, false)?.success() {
-            display::build_error();
-            continue;
+        display::day(year, day);
+        match run::build(path, false, false) {
+            Ok(BuildResult::Failure) => {
+                display::build_error();
+                continue;
+            }
+            Err(e) => {
+                display::build_error();
+                return Err(e);
+            }
+            _ => (),
         }
         display::part("1");
-        run_part(path, day, "1", &mut total_time, &mut num_parts)?;
+        if let Err(e) = run_part(path, day, "1", &mut total_time, &mut num_parts) {
+            display::run_error();
+            return Err(e);
+        }
         if day_number < 25 {
             display::day_part(year, day, "2");
-            run_part(path, day, "2", &mut total_time, &mut num_parts)?;
+            if let Err(e) = run_part(path, day, "2", &mut total_time, &mut num_parts) {
+                display::run_error();
+                return Err(e);
+            }
         }
     }
     if total_days == 0 {
@@ -288,7 +307,11 @@ fn test_parts(path: &Path, year: &str, day: &str, parts: &[&str]) -> Result<bool
             }
             empty = false;
             display::day_part(year, day, part);
-            match run::run(path, day, input, part, false, false)? {
+            let result = run::run(path, day, input, part, false, false);
+            if result.is_err() {
+                display::run_error();
+            }
+            match result? {
                 run::RunResult::Panic => display::panic_input(input),
                 run::RunResult::Unimplemented => {
                     display::unimplemented();
@@ -323,10 +346,10 @@ pub fn test_days(path: &Path, year: &str, days: impl IntoIterator<Item = u8>) ->
 }
 
 pub fn get(path: &Path, year: &str, day: &str) -> Result<()> {
-    let parts = ["1", "2"];
+    const PARTS: [&str; 2] = ["1", "2"];
     let data_path = &path.join("data").join("actual");
     let input_path = &data_path.join("input");
-    let answer_paths = &parts.map(|part| data_path.join(part).join("answer"));
+    let answer_paths = &PARTS.map(|part| data_path.join(part).join("answer"));
 
     let update_input = !input_path.read_file()?.has_contents();
     let update_answers = [
@@ -353,7 +376,7 @@ pub fn get(path: &Path, year: &str, day: &str) -> Result<()> {
                 if !update_answers[i] {
                     continue;
                 }
-                let part = parts[i];
+                let part = PARTS[i];
                 if let Some(answer) = &answers[i] {
                     let part_path = answer_paths[i].parent().unwrap();
                     if !part_path.try_is_dir()? {
@@ -392,10 +415,10 @@ pub fn submit(path: &Path, year: &str, day: &str, answer: Option<&str>) -> Resul
                 .try_contents()
                 .map_err(|_| "no answer to submit")?
         };
-        display::day_part(year, day, part);
         if !answer_path.try_is_dir()? {
             fs::create_dir_all(answer_path).context(AocError::FileSystemWrite)?;
         }
+        display::day_part(year, day, part);
         let result = network::submit(year, day, part, answer, session);
         if result.is_err() {
             display::submit_error();
@@ -426,6 +449,49 @@ pub fn open_day(year: &str, day: &str) -> Result<()> {
     let day = &day.parse::<u8>().unwrap().to_string();
     webbrowser::open(&format!("https://adventofcode.com/{year}/day/{day}"))
         .context(AocError::Browser)
+}
+
+pub fn all_progress(path: &Path) -> Result<()> {
+    let session = &get_session(path)?;
+    let year_completion = network::get_year_completion("2015", session)?;
+    println!();
+    display::completion_header();
+    display::year_completion("2015", year_completion);
+    let mut year = 2016;
+    let mut year_string = "2016".to_string();
+    while let Ok(year_completion) = network::get_year_completion(&year_string, session) {
+        display::year_completion(&year_string, year_completion);
+        year += 1;
+        year_string = year.to_string();
+    }
+    println!();
+    Ok(())
+}
+
+pub fn year_progress(path: &Path, year: &str) -> Result<()> {
+    let session = &get_session(path)?;
+    let year_completion = network::get_year_completion(year, session)?;
+    println!();
+    display::completion_header();
+    display::year_completion(year, year_completion);
+    println!();
+    Ok(())
+}
+
+pub fn day_progress(path: &Path, year: &str, day: &str) -> Result<()> {
+    let session = &get_session(path)?;
+    let progress = network::get_progress(year, day, session)?;
+    display::day_part(year, day, "1");
+    if let Some(answer) = &progress.part_1 {
+        display::just_answer(answer, true);
+    } else {
+        display::incomplete();
+    }
+    if let Some(answer) = &progress.part_2 {
+        display::day_part(year, day, "2");
+        display::just_answer(answer, true);
+    }
+    Ok(())
 }
 
 pub fn help() -> Result<()> {

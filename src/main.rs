@@ -1,15 +1,17 @@
 mod action;
 mod days;
+mod display;
+mod error;
+mod file;
 mod network;
 mod run;
 
-use aocli::{
-    error::{AocError, Arg, Context, ErrorDisplayer, Result, ToErr},
-    file::{CurrentDirectory, PathInfo},
-    ROOT,
-};
+use error::{AocError, Arg, Context, ErrorDisplayer, Result, ToErr};
+use file::{CurrentDirectory, PathInfo};
 
 use std::env;
+
+pub const ROOT: &str = "aoc-root";
 
 fn main() {
     cli().display_err();
@@ -267,7 +269,7 @@ fn cli() -> Result<()> {
             if args.len() == 1 {
                 action::open_year(year)
             } else {
-                assert_args(&args[1..], &[Arg::Day])?;
+                assert_args(&args[1..], &[Arg::Day]).usages(USAGES)?;
                 let day = &day_from_arg(args[1]).usages(USAGES)?;
                 action::open_day(year, day)
             }
@@ -276,14 +278,55 @@ fn cli() -> Result<()> {
             if args.is_empty() {
                 action::open_year(year)
             } else {
-                assert_args(args, &[Arg::Day])?;
-                let day = &day_from_arg(args[0]).usage("open").usage("open <DAY>")?;
+                const USAGE_1: &str = "open";
+                const USAGE_2: &str = "open <DAY>";
+                const USAGES: &[&str] = &[USAGE_1, USAGE_2];
+                assert_args(args, &[Arg::Day]).usages(USAGES)?;
+                let day = &day_from_arg(args[0]).usages(USAGES)?;
                 action::open_day(year, day)
             }
         }
-        (Open, Day { year, day }) => action::open_day(year, day),
+        (Open, Day { year, day }) => {
+            assert_args(args, &[]).usage("open")?;
+            action::open_day(year, day)
+        }
+        (Progress, Root) => {
+            const USAGE_1: &str = "progress";
+            const USAGE_2: &str = "progress <YEAR>";
+            const USAGE_3: &str = "progress <YEAR> <DAY>";
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2, USAGE_3];
+            match args.len() {
+                0 => action::all_progress(root),
+                1 => {
+                    let year = &year_from_arg(args[0]).usages(USAGES)?;
+                    action::year_progress(root, year)
+                }
+                _ => {
+                    assert_args(args, &[Arg::Year, Arg::Day]).usages(USAGES)?;
+                    let year = &year_from_arg(args[0]).usages(USAGES)?;
+                    let day = &day_from_arg(args[1]).usages(USAGES)?;
+                    action::day_progress(root, year, day)
+                }
+            }
+        }
+        (Progress, Year { year }) => {
+            const USAGE_1: &str = "progress";
+            const USAGE_2: &str = "progress <DAY>";
+            const USAGES: &[&str] = &[USAGE_1, USAGE_2];
+            if args.is_empty() {
+                action::year_progress(root, year)
+            } else {
+                assert_args(args, &[Arg::Day]).usages(USAGES)?;
+                let day = &day_from_arg(args[0]).usages(USAGES)?;
+                action::day_progress(root, year, day)
+            }
+        }
+        (Progress, Day { year, day }) => {
+            assert_args(args, &[]).usage("progress")?;
+            action::day_progress(root, year, day)
+        }
         (Help, _) => {
-            assert_args(args, &[])?;
+            assert_args(args, &[]).usage("help")?;
             action::help()
         }
         (_, Unknown) => format!("unknown directory - failed to find file `{ROOT}`").err(),
@@ -369,6 +412,7 @@ enum Command {
     Init,
     New,
     Open,
+    Progress,
     Run,
     Submit,
     Test,
@@ -384,6 +428,7 @@ impl Command {
             "init" => Ok(Self::Init),
             "new" => Ok(Self::New),
             "open" => Ok(Self::Open),
+            "progress" => Ok(Self::Progress),
             "run" => Ok(Self::Run),
             "submit" => Ok(Self::Submit),
             "test" => Ok(Self::Test),

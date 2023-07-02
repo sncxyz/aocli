@@ -47,7 +47,7 @@ pub enum AocError {
     #[error("server response error")]
     Response,
     #[error("webpage not available")]
-    DayAvailable,
+    PageAvailable,
     #[error("failed to open browser")]
     Browser,
     #[error("no days to run")]
@@ -58,6 +58,10 @@ pub enum AocError {
     TermFormat,
     #[error("day must be between 1 and 25")]
     TermDayRange,
+    #[error("invalid input name")]
+    InputName,
+    #[error("not a valid directory name")]
+    InputNameFormat,
 }
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;

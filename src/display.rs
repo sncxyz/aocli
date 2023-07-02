@@ -1,3 +1,5 @@
+use crate::network::{DayCompletion, YearCompletion};
+
 use colored::{ColoredString, Colorize};
 
 use std::{
@@ -113,6 +115,10 @@ pub fn just_answer(answer: &str, correct: bool) {
     println!("{}{}{}", "[".dimmed(), answer, "]".dimmed());
 }
 
+pub fn incomplete() {
+    println!("{}", "incomplete".yellow());
+}
+
 pub fn wait() {
     println!("{}", "wait".yellow());
 }
@@ -154,6 +160,10 @@ pub fn no_input() {
 pub fn build_error() {
     part("*");
     println!("{}", "build error".red());
+}
+
+pub fn run_error() {
+    println!("{}", "error".red());
 }
 
 pub fn day(year: &str, day: &str) {
@@ -248,4 +258,24 @@ impl<'a> Answer<'a> {
             self.answer
         }
     }
+}
+
+pub fn completion_header() {
+    println!("{}{}{}", " ".repeat(14), "1".repeat(10), "2".repeat(6));
+    println!("{}{}12345", " ".repeat(4 + 1), "1234567890".repeat(2),);
+}
+
+pub fn year_completion(year: &str, year_completion: YearCompletion) {
+    print!("{year} ");
+    for day in year_completion.days {
+        print!(
+            "{}",
+            match day {
+                DayCompletion::None => " ".into(),
+                DayCompletion::Partial => "★".dimmed(),
+                DayCompletion::Full => "★".yellow(),
+            }
+        );
+    }
+    println!(" {}", format!("{:02}", year_completion.total).yellow());
 }
