@@ -72,25 +72,27 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
         path.join("Cargo.toml"),
         format!(
             "[package]\n\
-        name = \"day-{day}\"\n\
-        version = \"0.1.0\"\n\
-        edition = \"2021\"\n\n\
-        [dependencies]\n\
-        aoclib = \"0.1.0\""
+            name = \"day-{day}\"\n\
+            version = \"0.1.0\"\n\
+            edition = \"2021\"\n\n\
+            [dependencies]\n\
+            aoclib = \"0.2.1\""
         ),
     )?;
     if is_day_25 {
         fs::write(
             path.join("src").join("main.rs"),
-            "aoc::parts!(1);\n\n\
-        fn part_1(input: &[&str]) -> impl ToString {\n    0\n}",
+            "use aoc::{Input, Parse};\n\n\
+            aoc::parts!(1);\n\n\
+            fn part_1(input: Input) -> impl ToString {\n    0\n}",
         )?;
     } else {
         fs::write(
             path.join("src").join("main.rs"),
-            "aoc::parts!(1);\n\n\
-        fn part_1(input: &[&str]) -> impl ToString {\n    0\n}\n\n\
-        // fn part_2(input: &[&str]) -> impl ToString {\n//     0\n// }",
+            "use aoc::{Input, Parse};\n\n\
+            aoc::parts!(1);\n\n\
+            fn part_1(input: Input) -> impl ToString {\n    0\n}\n\n\
+            // fn part_2(input: Input) -> impl ToString {\n//     0\n// }",
         )?;
     }
     let data = path.join("data").join("actual");
