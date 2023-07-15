@@ -1,7 +1,7 @@
 # aocli
 
 A helper CLI tool for solving [Advent of Code](https://adventofcode.com) in Rust.
-Uses [aoclib](https://github.com/sncxyz/aoclib) to run solutions.
+Uses [aoclib](https://github.com/sncxyz/aoclib) to parse inputs and run solutions.
 
 ## Installation
 ```
@@ -21,6 +21,7 @@ The binary name for aocli is `aoc`.
 - run solutions on many different inputs
 - run solutions to all days, or specified days, of a year
 - time solutions
+- parse puzzle inputs with aoclib
 - quickly view your progress
 - project management (create crates and files)
 - minimal source files and compile times for each day
@@ -68,17 +69,19 @@ while the following two commands will run every solution for the year 2015 inste
 ## Solutions
 A solution to a day consists of a call to `aoc::parts!` from aoclib and a function for each solved part.
 
-The input is passed in as a `&[&str]`, split by line, with whitespace trimmed from the end of the input file.
+The input is passed in as an instance of `aoc::Input` from aoclib. See the docs for more information on how to use it.
 
 For example:
 ```rust
+use aoc::{Input, Parse};
+
 aoc::parts!(1, 2);
 
-fn part_1(input: &[&str]) -> impl ToString {
+fn part_1(input: Input) -> impl ToString {
     // solution to part 1
 }
 
-fn part_2(input: &[&str]) -> impl ToString {
+fn part_2(input: Input) -> impl ToString {
     // solution to part 2
 }
 ```
