@@ -160,6 +160,31 @@ will set up a solution workspace with `aoc-solutions` as the root directory, and
 
 In order to use the network features of aocli (`get` and `submit`), you must paste your session cookie into the `.session` file created by this command. You can do so by running `aoc-session > .session` in the `/aoc-solutions` directory. See [`aoc-session`](https://crates.io/crates/aoc-session) crate.
 
+<details>
+  <summary>About the format of <code>.session</code> file</summary>
+
+  The contents of the `.session` file must match one of the following:
+
+  - `<session-id>`, e.g.
+  
+  ```text
+  53616c7465645f5f286128b614b18e3d5a906611b3bac6740671d5e461a7ab0d2be049fb7363eadb2e07ecfe51b600927ddd29b2311ea418ce366e8b9cf98dbb
+  ```
+
+  - `session=<session-id>`, e.g.
+  
+  ```text
+  session=53616c7465645f5f286128b614b18e3d5a906611b3bac6740671d5e461a7ab0d2be049fb7363eadb2e07ecfe51b600927ddd29b2311ea418ce366e8b9cf98dbb
+  ```
+
+  - `<cookie-value>`, e.g.
+  
+  ```text
+  _ga=GA1.2.1481191691.1701307337; _gid=GA1.2.2089724069.1701307337; session=53616c7465645f5f286128b614b18e3d5a906611b3bac6740671d5e461a7ab0d2be049fb7363eadb2e07ecfe51b600927ddd29b2311ea418ce366e8b9cf98dbb; _ga_MHSNPJKWC7=GS1.2.1701383119.5.1.1701383528.0.0.0
+  ```
+
+</details>
+
 ### `open`
 
 ```text
