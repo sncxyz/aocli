@@ -158,7 +158,7 @@ Initialises a solution workspace in the current directory. For example:
 
 will set up a solution workspace with `aoc-solutions` as the root directory, and it will attempt to call `git init`.
 
-In order to use the network features of aocli (`get` and `submit`), you must paste your session cookie into the `.session` file created by this command.
+In order to use the network features of aocli (`get` and `submit`), you must paste your session cookie into the `.session` file created by this command. You can do so by running `aoc-session > .session` in the `/aoc-solutions` directory. See [`aoc-session`](https://crates.io/crates/aoc-session) crate.
 
 ### `open`
 
