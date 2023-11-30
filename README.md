@@ -1,5 +1,10 @@
 # aocli
 
+[![Crates.io](https://img.shields.io/crates/v/aocli)](https://crates.io/crates/aocli)
+[![Downloads](https://img.shields.io/crates/d/aocli.svg)](https://crates.io/crates/aocli)
+[![License](https://img.shields.io/crates/l/aocli)](https://crates.io/crates/aocli)
+[![Dependency Status](https://deps.rs/repo/github/sncxyz/aocli/status.svg)](https://deps.rs/repo/github/sncxyz/aocli)
+
 A helper CLI tool for solving [Advent of Code](https://adventofcode.com) in Rust.
 Uses [aoclib](https://github.com/sncxyz/aoclib) to parse inputs and run solutions.
 
