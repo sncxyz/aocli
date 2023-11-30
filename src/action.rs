@@ -544,7 +544,17 @@ fn get_session(root: &Path) -> Result<String> {
     root.join(".session")
         .read_file()
         .and_then(FileInfo::try_contents)
-        .map(|contents| format!("session={}", contents.trim()))
+        .map(|mut contents| {
+            if contents.starts_with("session=") {
+                let trimmed_len = contents.trim_end().len();
+                contents.truncate(trimmed_len);
+                contents
+            } else {
+                // Somehow this seems to work even for cookies with Google Analytics:
+                // https://github.com/sncxyz/aocli/issues/6
+                format!("session={}", contents.trim())
+            }
+        })
         .context("failed to get session cookie")
 }
 
