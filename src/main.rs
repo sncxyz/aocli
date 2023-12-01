@@ -256,7 +256,7 @@ fn cli() -> Result<()> {
             if args.is_empty() {
                 return action::test_days(&root.join(year), year, 1..=25);
             }
-            if args[0] == "days" || args[1] == "d" {
+            if args[0] == "days" || args[0] == "d" {
                 let path = &root.join(year);
                 let days = days::parse_days(&args[1..]).usages(USAGES)?;
                 return action::test_days(path, year, days);
