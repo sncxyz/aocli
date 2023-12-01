@@ -1,6 +1,6 @@
 [package]
 name = "aocli"
-version = "0.0.7"
+version = "0.0.8"
 authors = ["Sam Collins <samc3259@gmail.com>"]
 edition = "2021"
 description = "Advent of Code helper CLI"

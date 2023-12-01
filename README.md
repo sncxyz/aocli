@@ -1,5 +1,9 @@
 # aocli
 
+[![Crates.io](https://img.shields.io/crates/v/aocli)](https://crates.io/crates/aocli)
+[![Downloads](https://img.shields.io/crates/d/aocli.svg)](https://crates.io/crates/aocli)
+[![License](https://img.shields.io/crates/l/aocli)](https://crates.io/crates/aocli)
+
 A helper CLI tool for solving [Advent of Code](https://adventofcode.com) in Rust.
 Uses [aoclib](https://github.com/sncxyz/aoclib) to parse inputs and run solutions.
 
@@ -136,9 +140,9 @@ Initialises a solution workspace in the current directory. For example:
 ```
 will set up a solution workspace with `aoc-solutions` as the root directory, and it will attempt to call `git init`.
 
-In order to use the network features of aocli (`get` and `submit`), you must paste your session cookie into the `.session` file created by this command.
+In order to use the network features of aocli (`get`, `submit` and `progress`), you must paste your session cookie into the `.session` file created by this command, with or without the `session=` header.
 
-### `open`
+### `open` (`o`)
 ```
 /root > aoc open <YEAR>
 /root/YEAR > aoc open
@@ -150,14 +154,14 @@ In order to use the network features of aocli (`get` and `submit`), you must pas
 ```
 Opens the webpage for the year or day in the default browser using [webbrowser](https://crates.io/crates/webbrowser).
 
-### `new`
+### `new` (`n`)
 ```
 /root > aoc new <YEAR> <DAY>
 /root/YEAR > aoc new <DAY>
 ```
 Creates the directories, files and Rust crate for the solution to a new day of Advent of Code.
 
-### `get`
+### `get` (`g`)
 ```
 /root > aoc get <YEAR> <DAY>
 /root/YEAR > aoc get <DAY>
@@ -165,7 +169,7 @@ Creates the directories, files and Rust crate for the solution to a new day of A
 ```
 Downloads the puzzle input and any existing puzzle answers for the day from the website if they are not already in local files.
 
-### `add`
+### `add` (`a`)
 ```
 /root > aoc add <YEAR> <DAY> <INPUT>
 /root/YEAR > aoc add <DAY> <INPUT>
@@ -187,7 +191,7 @@ The name of the input must be a valid directory name, and cannot be `1` or `2`.
 ```
 Resets the input and answer files to empty files within the `actual` input of every day of the year, or the specified day, so that `get` can fill them in.
 
-### `run`
+### `run` (`r`)
 ```
 /root > aoc run <YEAR>
 /root/YEAR > aoc run
@@ -219,7 +223,7 @@ to run just part 2 with input `example`.
 
 Note that the lack of flags here is why `1` and `2` are invalid names for inputs.
 
-### `debug`
+### `debug` (`d`)
 ```
 /root > aoc debug <YEAR> <DAY> [INPUT] [PART]
 /root/YEAR > aoc debug <DAY> [INPUT] [PART]
@@ -227,7 +231,7 @@ Note that the lack of flags here is why `1` and `2` are invalid names for inputs
 ```
 The same as `run`, except the solution is run in debug mode instead of release mode.
 
-### `run days`
+### `run days` (`r d`)
 ```
 /root > aoc run <YEAR> days <DAYS>
 /root/YEAR > aoc run days <DAYS>
@@ -266,7 +270,7 @@ to run days 1 to 10 and 20 to 25 in 2022, and
 ```
 to run days 1, 4 and 9 in 2018.
 
-### `test`
+### `test` (`t`)
 ```
 /root > aoc test <YEAR>
 /root/YEAR > aoc test
@@ -280,7 +284,7 @@ Runs the solution to both parts of every day of the year with every puzzle input
 ```
 Runs the solution to both parts, or a specific part, of the day with every puzzle input found in `/DAY/data` in release mode.
 
-### `test days`
+### `test days` (`t d`)
 ```
 /root > aoc test <YEAR> days <DAYS>
 /root/YEAR > aoc test days <DAYS>
@@ -289,7 +293,7 @@ Runs the solution to both parts of the specified days of the year with every puz
 
 The rules governing the argument \<DAYS\> are the same as in `run days` above.
 
-### `submit`
+### `submit` (`s`)
 ```
 /root > aoc submit <YEAR> <DAY> [ANSWER]
 /root/YEAR > aoc submit <DAY> [ANSWER]
@@ -306,7 +310,7 @@ For example:
 ```
 will run the solution and then submit the answer it produced to the site.
 
-### `progress`
+### `progress` (`p`)
 ```
 /root > aoc progress
 ```

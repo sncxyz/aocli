@@ -162,7 +162,7 @@ fn cli() -> Result<()> {
                 path.assert_year_dir()?;
                 return action::run_days(path, year, 1..=25);
             }
-            if args[1] == "days" {
+            if args[1] == "days" || args[1] == "d" {
                 let path = &root.join(year);
                 path.assert_year_dir()?;
                 let days = days::parse_days(&args[2..]).usages(USAGES)?;
@@ -182,7 +182,7 @@ fn cli() -> Result<()> {
             if args.is_empty() {
                 return action::run_days(&root.join(year), year, 1..=25);
             }
-            if args[0] == "days" {
+            if args[0] == "days" || args[0] == "d" {
                 let path = &root.join(year);
                 let days = days::parse_days(&args[1..]).usages(USAGES)?;
                 return action::run_days(path, year, days);
@@ -236,7 +236,7 @@ fn cli() -> Result<()> {
                 path.assert_year_dir()?;
                 return action::test_days(path, year, 1..=25);
             }
-            if args[1] == "days" {
+            if args[1] == "days" || args[1] == "d" {
                 let path = &root.join(year);
                 path.assert_year_dir()?;
                 let days = days::parse_days(&args[2..]).usages(USAGES)?;
@@ -256,7 +256,7 @@ fn cli() -> Result<()> {
             if args.is_empty() {
                 return action::test_days(&root.join(year), year, 1..=25);
             }
-            if args[0] == "days" {
+            if args[0] == "days" || args[1] == "d" {
                 let path = &root.join(year);
                 let days = days::parse_days(&args[1..]).usages(USAGES)?;
                 return action::test_days(path, year, days);
@@ -458,18 +458,18 @@ enum Command {
 impl Command {
     fn from_arg(arg: &str) -> Result<Self> {
         match arg {
-            "add" => Ok(Self::Add),
+            "add" | "a" => Ok(Self::Add),
             "clean" => Ok(Self::Clean),
-            "debug" => Ok(Self::Debug),
-            "get" => Ok(Self::Get),
+            "debug" | "d" => Ok(Self::Debug),
+            "get" | "g" => Ok(Self::Get),
             "help" => Ok(Self::Help),
             "init" => Ok(Self::Init),
-            "new" => Ok(Self::New),
-            "open" => Ok(Self::Open),
-            "progress" => Ok(Self::Progress),
-            "run" => Ok(Self::Run),
-            "submit" => Ok(Self::Submit),
-            "test" => Ok(Self::Test),
+            "new" | "n" => Ok(Self::New),
+            "open" | "o" => Ok(Self::Open),
+            "progress" | "p" => Ok(Self::Progress),
+            "run" | "r" => Ok(Self::Run),
+            "submit" | "s" => Ok(Self::Submit),
+            "test" | "t" => Ok(Self::Test),
             _ => format!("invalid command `{arg}`").err(),
         }
     }

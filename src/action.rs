@@ -544,7 +544,14 @@ fn get_session(root: &Path) -> Result<String> {
     root.join(".session")
         .read_file()
         .and_then(FileInfo::try_contents)
-        .map(|contents| format!("session={}", contents.trim()))
+        .map(|contents| {
+            let trimmed = contents.trim();
+            if trimmed.starts_with("session=") {
+                trimmed.to_owned()
+            } else {
+                format!("session={trimmed}")
+            }
+        })
         .context("failed to get session cookie")
 }
 
