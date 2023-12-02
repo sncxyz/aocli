@@ -18,7 +18,7 @@ pub fn init(root: &Path) -> Result<()> {
         root,
         "[workspace]\nmembers = []\nresolver=\"2\"",
     )?;
-    write_project_file(".gitignore", root, "./target/\n/.session\n**/[1-2]/out/")?;
+    write_project_file(".gitignore", root, "/target\n/.session\n**/[1-2]/out/")?;
     write_project_file(".session", root, "")?;
     write_project_file(
         "README.md",
@@ -80,11 +80,11 @@ fn write_day_files(path: &Path, year: &str, day: &str) -> Result<()> {
             name = \"y{year}d{day}\"\n\
             version = \"0.1.0\"\n\
             edition = \"2021\"\n\n\
-            [dependencies]\n\
-            aoclib = \"0.2.1\"\n\n\
             [[bin]]\n\
             name = \"y{year}d{day}\"\n\
-            path = \"src/{file_name}\""
+            path = \"src/{file_name}\"\n\n\
+            [dependencies]\n\
+            aoclib = \"0.2.1\""
         ),
     )?;
     if is_day_25 {
