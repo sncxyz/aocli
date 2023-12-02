@@ -61,6 +61,7 @@ pub fn new_day(path: &Path, year: &str, day: &str) -> Result<()> {
     write_day_files(path, year, day).context(AocError::FileWrite)?;
     display::success!("created crate for {year}/{day}");
     add_workspace_member(path, year, day).context(AocError::WorkspaceMember)?;
+    display::success!("added {year}/{day} to workspace");
     display::info!("building crate...");
     if run::build(path, false, false).display_err().is_some() {
         display::success!("finished building crate");
