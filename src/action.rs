@@ -129,7 +129,7 @@ struct Workspace {
 fn add_workspace_member(path: &Path, year: &str, day: &str) -> Result<()> {
     let root = path.parent().unwrap().parent().unwrap();
     let path = root.join("Cargo.toml");
-    let file = fs::read_to_string(&path)?;
+    let file = fs::read_to_string(&path).context(AocError::WorkspaceCargo)?;
     let mut toml: CargoToml = toml::from_str(&file).context(AocError::WorkspaceCargo)?;
     toml.workspace.members.push(format!("{year}/{day}"));
     let file = toml::to_string(&toml).unwrap();
