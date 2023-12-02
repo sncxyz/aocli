@@ -81,15 +81,13 @@ The input is passed in as an instance of `aoc::Input` from aoclib. See the docs 
 
 For example:
 ```rust
-use aoc::{Input, Parse};
-
 aoc::parts!(1, 2);
 
-fn part_1(input: Input) -> impl ToString {
+fn part_1(input: aoc::Input) -> impl ToString {
     // solution to part 1
 }
 
-fn part_2(input: Input) -> impl ToString {
+fn part_2(input: aoc::Input) -> impl ToString {
     // solution to part 2
 }
 ```

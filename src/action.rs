@@ -90,17 +90,15 @@ fn write_day_files(path: &Path, year: &str, day: &str) -> Result<()> {
     if is_day_25 {
         fs::write(
             path.join("src").join(&file_name),
-            "use aoc::{Input, Parse};\n\n\
-            aoc::parts!(1);\n\n\
-            fn part_1(input: Input) -> impl ToString {\n    0\n}",
+            "aoc::parts!(1);\n\n\
+            fn part_1(input: aoc::Input) -> impl ToString {\n    0\n}",
         )?;
     } else {
         fs::write(
             path.join("src").join(&file_name),
-            "use aoc::{Input, Parse};\n\n\
-            aoc::parts!(1);\n\n\
-            fn part_1(input: Input) -> impl ToString {\n    0\n}\n\n\
-            // fn part_2(input: Input) -> impl ToString {\n//     0\n// }",
+            "aoc::parts!(1);\n\n\
+            fn part_1(input: aoc::Input) -> impl ToString {\n    0\n}\n\n\
+            // fn part_2(input: aoc::Input) -> impl ToString {\n//     0\n// }",
         )?;
     }
     let data = path.join("data").join("actual");
