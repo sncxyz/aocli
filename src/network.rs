@@ -1,6 +1,6 @@
-use crate::error::{AocError, Context, Result, ToErr};
-
 use regex::Regex;
+
+use crate::error::{AocError, Context, Result, ToErr};
 
 pub fn get_input(year: &str, day: &str, session: &str) -> Result<String> {
     let day = &day.parse::<u8>().unwrap().to_string();

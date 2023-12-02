@@ -26,10 +26,11 @@ The binary name for aocli is `aoc`.
 - run solutions to all days, or specified days, of a year
 - time solutions
 - parse puzzle inputs with aoclib
-- quickly view your progress
-- project management (create crates and files)
-- minimal source files and compile times for each day
+- quickly view progress
 - open year or day webpage in browser
+- project management (create workspace, crates and files)
+- minimal source files per day (only one line of boilerplate)
+- minimal compile times per day (separate crates that share dependencies)
 
 ## Example
 ![](example.png)
@@ -38,10 +39,13 @@ The binary name for aocli is `aoc`.
 A solution workspace consists of the root directory, year directories, and day directories.
 For example:
 ```
-aoc-solutions
+aoc
 ├── aoc-root
+├── Cargo.toml
+├── Cargo.lock
 ├── .session
 ├── .gitignore
+├── target
 ├── 2015
 │   ├── 01
 │   └── 02
@@ -52,22 +56,22 @@ aoc-solutions
     ├── 02
     └── 03
 ```
-Here, the root directory is called `aoc-solutions` and contains year directories `2015`, `2016` and `2017`, which each contain various day directories.
-The path to 2015 day 1 is `/aoc-solutions/2015/01` and the path to 2017 day 3 is `/aoc-solutions/2017/03`.
+Here, the root directory (a Cargo Workspace) is called `aoc` and contains year directories `2015`, `2016` and `2017`, which each contain various day directories.
+The path to 2015 day 1 is `/aoc/2015/01` and the path to 2017 day 3 is `/aoc/2017/03`.
 Each day directory is a regular Rust binary crate.
 The `aoc-root` file denotes the root of a solution workspace, and the `.session` file contains the session cookie to log into the Advent of Code site.
 
 aocli commands may work from within any of the three directory levels, and the required arguments and functionality may differ for each level.
 For example, the following three commands will do the same thing:
 ```
-/aoc-solutions > aoc run 15 1
-/aoc-solutions/2015 > aoc run 1
-/aoc-solutions/2015/01 > aoc run
+/aoc > aoc run 15 1
+/aoc/2015 > aoc run 1
+/aoc/2015/01 > aoc run
 ```
 while the following two commands will run every solution for the year 2015 instead of just day 1:
 ```
-/aoc-solutions > aoc run 15
-/aoc-solutions/2015 > aoc run
+/aoc > aoc run 15
+/aoc/2015 > aoc run
 ```
 
 ## Solutions
@@ -100,7 +104,7 @@ The file system structure looks like this:
 ```
 DAY
 ├── Cargo.toml
-├── src/main.rs
+├── src/DAY.rs
 └── data
     ├── actual
     ├── example1
@@ -136,9 +140,9 @@ Note that parameters surrounded by `<>` are **required**, while those surrounded
 ### `init`
 Initialises a solution workspace in the current directory. For example:
 ```
-/aoc-solutions > aoc init
+/aoc > aoc init
 ```
-will set up a solution workspace with `aoc-solutions` as the root directory, and it will attempt to call `git init`.
+will set up a solution workspace with `aoc` as the root directory, and it will attempt to call `git init`. It will also initialise a Cargo Workspace.
 
 In order to use the network features of aocli (`get`, `submit` and `progress`), you must paste your session cookie into the `.session` file created by this command, with or without the `session=` header.
 
@@ -159,7 +163,7 @@ Opens the webpage for the year or day in the default browser using [webbrowser](
 /root > aoc new <YEAR> <DAY>
 /root/YEAR > aoc new <DAY>
 ```
-Creates the directories, files and Rust crate for the solution to a new day of Advent of Code.
+Creates the directories, files and Rust crate for the solution to a new day of Advent of Code. Adds the new crate as a member of the Cargo Workspace.
 
 ### `get` (`g`)
 ```

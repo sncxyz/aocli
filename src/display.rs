@@ -1,12 +1,12 @@
-use crate::network::{DayCompletion, YearCompletion};
-
-use colored::{ColoredString, Colorize};
-
 use std::{
     env, fmt,
     io::{self, Write},
     path::{Path, PathBuf},
 };
+
+use colored::{ColoredString, Colorize};
+
+use crate::network::{DayCompletion, YearCompletion};
 
 fn log(header: ColoredString, message: impl fmt::Display) {
     let len = header.len();

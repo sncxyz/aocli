@@ -1,6 +1,6 @@
-use crate::{error::Result, file::PathInfo};
-
 use std::{fs, path::Path, process::Command};
+
+use crate::{error::Result, file::PathInfo};
 
 pub fn build(path: &Path, debug: bool, show_output: bool) -> Result<BuildResult> {
     let mut command = Command::new("cargo");
@@ -33,6 +33,7 @@ impl BuildResult {
 
 pub fn run(
     path: &Path,
+    year: &str,
     day: &str,
     input: &str,
     part: &str,
@@ -40,9 +41,13 @@ pub fn run(
     show_output: bool,
 ) -> Result<RunResult> {
     let exe = path
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
         .join("target")
         .join(if debug { "debug" } else { "release" })
-        .join(format!("day-{day}"));
+        .join(format!("y{year}d{day}"));
     let mut command = Command::new(exe);
     command.current_dir(path).arg(input).arg(part);
     let status = if show_output {

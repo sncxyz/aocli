@@ -1,6 +1,6 @@
-use crate::display;
-
 use std::fmt;
+
+use crate::display;
 
 #[derive(thiserror::Error, Debug)]
 pub enum AocError {
@@ -62,6 +62,10 @@ pub enum AocError {
     InputName,
     #[error("not a valid directory name")]
     InputNameFormat,
+    #[error("failed to read workspace Cargo.toml")]
+    WorkspaceCargo,
+    #[error("failed to add workspace member")]
+    WorkspaceMember,
 }
 
 pub type Result<T, E = Error> = core::result::Result<T, E>;

@@ -1,22 +1,24 @@
-use crate::run::BuildResult;
-use crate::{network, run, Parts};
+use std::{fs, path::Path, process};
+
+use serde::{Deserialize, Serialize};
 
 use crate::{
     display,
     error::{AocError, Context, ErrorDisplayer, Result, ToErr},
     file::{FileInfo, PathInfo},
-    ROOT,
+    network,
+    run::{self, BuildResult},
+    Parts, ROOT,
 };
-
-use std::{fs, path::Path, process};
 
 pub fn init(root: &Path) -> Result<()> {
     write_project_file(ROOT, root, "")?;
     write_project_file(
-        ".gitignore",
+        "Cargo.toml",
         root,
-        "target/\n!**/data/target/\nCargo.lock\n/.session\n**/[1-2]/out/",
+        "[workspace]\nmembers = []\nresolver=\"2\"",
     )?;
+    write_project_file(".gitignore", root, "./target/\n/.session\n**/[1-2]/out/")?;
     write_project_file(".session", root, "")?;
     write_project_file(
         "README.md",
@@ -56,8 +58,9 @@ pub fn new_day(path: &Path, year: &str, day: &str) -> Result<()> {
     if path.try_exists().context(AocError::FileRead)? {
         return AocError::PathExists(display::path(path)).err();
     }
-    write_day_files(path, day).context(AocError::FileWrite)?;
+    write_day_files(path, year, day).context(AocError::FileWrite)?;
     display::success!("created crate for {year}/{day}");
+    add_workspace_member(path, year, day).context(AocError::WorkspaceMember)?;
     display::info!("building crate...");
     if run::build(path, false, false).display_err().is_some() {
         display::success!("finished building crate");
@@ -65,30 +68,34 @@ pub fn new_day(path: &Path, year: &str, day: &str) -> Result<()> {
     Ok(())
 }
 
-fn write_day_files(path: &Path, day: &str) -> Result<()> {
+fn write_day_files(path: &Path, year: &str, day: &str) -> Result<()> {
     let is_day_25 = day == "25";
+    let file_name = format!("{day}.rs");
     fs::create_dir_all(path.join("src"))?;
     fs::write(
         path.join("Cargo.toml"),
         format!(
             "[package]\n\
-            name = \"day-{day}\"\n\
+            name = \"y{year}d{day}\"\n\
             version = \"0.1.0\"\n\
             edition = \"2021\"\n\n\
             [dependencies]\n\
-            aoclib = \"0.2.1\""
+            aoclib = \"0.2.1\"\n\n\
+            [[bin]]\n\
+            name = \"y{year}d{day}\"\n\
+            path = \"src/{file_name}\""
         ),
     )?;
     if is_day_25 {
         fs::write(
-            path.join("src").join("main.rs"),
+            path.join("src").join(&file_name),
             "use aoc::{Input, Parse};\n\n\
             aoc::parts!(1);\n\n\
             fn part_1(input: Input) -> impl ToString {\n    0\n}",
         )?;
     } else {
         fs::write(
-            path.join("src").join("main.rs"),
+            path.join("src").join(&file_name),
             "use aoc::{Input, Parse};\n\n\
             aoc::parts!(1);\n\n\
             fn part_1(input: Input) -> impl ToString {\n    0\n}\n\n\
@@ -104,6 +111,28 @@ fn write_day_files(path: &Path, day: &str) -> Result<()> {
         fs::create_dir(data.join("2"))?;
         fs::write(data.join("2").join("answer"), "")?;
     }
+    Ok(())
+}
+
+#[derive(Serialize, Deserialize)]
+struct CargoToml {
+    workspace: Workspace,
+}
+
+#[derive(Serialize, Deserialize)]
+struct Workspace {
+    members: Vec<String>,
+    resolver: String,
+}
+
+fn add_workspace_member(path: &Path, year: &str, day: &str) -> Result<()> {
+    let root = path.parent().unwrap().parent().unwrap();
+    let path = root.join("Cargo.toml");
+    let file = fs::read_to_string(&path)?;
+    let mut toml: CargoToml = toml::from_str(&file).context(AocError::WorkspaceCargo)?;
+    toml.workspace.members.push(format!("{year}/{day}"));
+    let file = toml::to_string(&toml).unwrap();
+    fs::write(&path, file)?;
     Ok(())
 }
 
@@ -157,7 +186,7 @@ pub fn run_day(
         Parts::Default => {
             let mut both_unimplemented = true;
             for part in ["1", "2"] {
-                match run::run(path, day, input, part, debug, true)? {
+                match run::run(path, year, day, input, part, debug, true)? {
                     run::RunResult::Success { answer, time } => {
                         let correct = get_correct(data_path, part)?;
                         both_unimplemented = false;
@@ -175,7 +204,7 @@ pub fn run_day(
                 display::info!("both parts unimplemented");
             }
         }
-        Parts::Part(part) => match run::run(path, day, input, part, debug, true)? {
+        Parts::Part(part) => match run::run(path, year, day, input, part, debug, true)? {
             run::RunResult::Success { answer, time } => {
                 let correct = get_correct(data_path, part)?;
                 display::answer_full(year, day, part, &answer, correct.as_deref(), time);
@@ -228,13 +257,13 @@ pub fn run_days(path: &Path, year: &str, days: impl IntoIterator<Item = u8>) -> 
             _ => (),
         }
         display::part("1");
-        if let Err(e) = run_part(path, day, "1", &mut total_time, &mut num_parts) {
+        if let Err(e) = run_part(path, year, day, "1", &mut total_time, &mut num_parts) {
             display::run_error();
             return Err(e);
         }
         if day_number < 25 {
             display::day_part(year, day, "2");
-            if let Err(e) = run_part(path, day, "2", &mut total_time, &mut num_parts) {
+            if let Err(e) = run_part(path, year, day, "2", &mut total_time, &mut num_parts) {
                 display::run_error();
                 return Err(e);
             }
@@ -249,12 +278,13 @@ pub fn run_days(path: &Path, year: &str, days: impl IntoIterator<Item = u8>) -> 
 
 fn run_part(
     path: &Path,
+    year: &str,
     day: &str,
     part: &str,
     total_time: &mut u64,
     num_parts: &mut u8,
 ) -> Result<()> {
-    match run::run(path, day, "actual", part, false, false)? {
+    match run::run(path, year, day, "actual", part, false, false)? {
         run::RunResult::Panic => display::panic(),
         run::RunResult::Unimplemented => display::unimplemented(),
         run::RunResult::Success { answer, time } => {
@@ -305,7 +335,7 @@ fn test_parts(path: &Path, year: &str, day: &str, parts: &[&str]) -> Result<bool
             }
             empty = false;
             display::day_part(year, day, part);
-            let result = run::run(path, day, input, part, false, false);
+            let result = run::run(path, year, day, input, part, false, false);
             if result.is_err() {
                 display::run_error();
             }

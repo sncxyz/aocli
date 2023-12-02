@@ -6,10 +6,10 @@ mod file;
 mod network;
 mod run;
 
+use std::env;
+
 use error::{AocError, Arg, Context, ErrorDisplayer, Result, ToErr};
 use file::{CurrentDirectory, PathInfo};
-
-use std::env;
 
 pub const ROOT: &str = "aoc-root";
 

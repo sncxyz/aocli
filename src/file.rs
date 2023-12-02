@@ -1,12 +1,12 @@
+use std::{
+    env, fs,
+    path::{Path, PathBuf},
+};
+
 use crate::{
     display,
     error::{AocError, Context, Result},
     ROOT,
-};
-
-use std::{
-    env, fs,
-    path::{Path, PathBuf},
 };
 
 pub enum CurrentDirectory {
