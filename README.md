@@ -132,6 +132,11 @@ Empty or non-existent answer files are taken to mean that the answer is unknown.
 `run`, `debug`, `test` and `submit` display puzzle answers colour-coded.
 Green means correct, red means incorrect, and yellow means the correct answer is not known.
 
+## Notes
+In order to use the network features of aocli (`get`, `submit` and `progress`), you must paste your session cookie into the `.session` file created by this command, with or without the `session=` header.
+
+If you create a crate as a dependency, such as for the Intcode computer in 2019, you must remember to add it to the Cargo Workspace by modifying the Config.toml file at the root.
+
 ## Commands
 Note that parameters surrounded by `<>` are **required**, while those surrounded by `[]` are **optional**.
 
@@ -141,8 +146,6 @@ Initialises a solution workspace in the current directory. For example:
 /aoc > aoc init
 ```
 will set up a solution workspace with `aoc` as the root directory, and it will attempt to call `git init`. It will also initialise a Cargo Workspace.
-
-In order to use the network features of aocli (`get`, `submit` and `progress`), you must paste your session cookie into the `.session` file created by this command, with or without the `session=` header.
 
 ### `open` (`o`)
 ```
